@@ -235,6 +235,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
   // Banner图标背景使用全局渐变
   const [isComposingBannerMain, setIsComposingBannerMain] = useState(false);
   const [isComposingBannerSub, setIsComposingBannerSub] = useState(false);
+  const [isComposingBannerBtn, setIsComposingBannerBtn] = useState(false);
 
   // 右屏 - 活动弹窗使用全局渐变
   const popupGradient = globalBgGradient;
@@ -1180,7 +1181,23 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
             </div>
                 <div className="flex gap-2 items-center">
                     <input type="text" className="flex-1 border text-xs p-1 rounded-[8px]" style={{ backgroundColor: '#F3F3F5' }} value={bannerTagText} onChange={e => setBannerTagText(e.target.value)} placeholder="暑期大放送"/>
-                    <input type="text" className="w-20 border text-xs p-1 rounded-[8px]" style={{ backgroundColor: '#F3F3F5' }} value={bannerBtnText} onChange={e => setBannerBtnText(e.target.value.slice(0,3))} maxLength={3} placeholder="去领取"/>
+                    <input 
+                      type="text" 
+                      className="w-20 border text-xs p-1 rounded-[8px]" 
+                      style={{ backgroundColor: '#F3F3F5' }} 
+                      value={bannerBtnText} 
+                      onCompositionStart={() => setIsComposingBannerBtn(true)}
+                      onCompositionEnd={(e) => {
+                        setIsComposingBannerBtn(false);
+                        setBannerBtnText(e.currentTarget.value.slice(0, 3));
+                      }}
+                      onChange={e => {
+                        const next = e.target.value;
+                        setBannerBtnText(isComposingBannerBtn ? next : next.slice(0, 3));
+                      }}
+                      maxLength={3} 
+                      placeholder="去领取"
+                    />
             </div>
                 <div className="border-t border-gray-200 my-2 pt-2">
                    <div className="text-xs font-bold mb-2">下载操作</div>
