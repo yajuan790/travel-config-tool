@@ -1,0 +1,42 @@
+/* 引入本地字体文件 */
+@font-face {
+  font-family: 'MF FangHei';
+  src: url('/fonts/MFFangHei.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 如果有专门的 Heavy 字重文件，可以再定义一个，或者让浏览器模拟粗体 */
+@font-face {
+  font-family: 'MF FangHei';
+  src: url('/fonts/MFFangHei.ttf') format('truetype'); /* 如果有专门的粗体文件请替换这里的路径 */
+  font-weight: 900; /* 对应 Heavy */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DIN';
+  src: url('/fonts/DIN-Bold.otf'); /* 对应你截图里的文件名 */
+  font-weight: bold;
+  font-style: normal;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
