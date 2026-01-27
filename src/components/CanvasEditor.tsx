@@ -1052,7 +1052,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
         <div className="w-[420px] border-r border-gray-700 p-5 flex flex-col gap-4 overflow-y-auto shrink-0 text-gray-800 h-full z-10" style={{ backgroundColor: '#F0F1F4' }}>
             {/* 一键标准化 */}
             <div className="bg-white p-4 rounded-2xl shadow-md space-y-3" style={{ borderRadius: '12px' }}>
-              <h3 className="font-bold text-lg pb-2 mb-3">一键标准化</h3>
+              <h3 className="font-black text-lg pb-2 mb-3">一键标准化</h3>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-700 font-bold">颜色选择:</span>
                 <div className="flex gap-2 flex-1">
@@ -1093,7 +1093,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
             
             {/* 左屏 */}
             <div className="bg-white p-4 rounded-2xl shadow-md space-y-3" style={{ borderRadius: '12px' }}>
-              <h3 className="font-bold text-lg pb-2 mb-3">发券会场 (左屏)</h3>
+              <h3 className="font-black text-lg pb-2 mb-3">发券会场 (左屏)</h3>
                  <ColorInput label="背景色值:" value={bgColorTop} onChange={(val) => setGlobalBgGradient({ ...globalBgGradient, bottom: val })} />
                  <div className="border-t border-gray-200 my-2"></div>
                  <div className="text-xs font-bold">文字编辑</div>
@@ -1170,13 +1170,13 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
                    <div className="flex flex-col gap-2">
                      <button 
                        onClick={() => download('会场全图.png', { left: SCREEN_1_X, top: 0, width: PHONE_WIDTH, height: PHONE_HEIGHT })} 
-                       className="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-[8px] text-xs w-full"
+                       className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2.5 rounded-[8px] text-xs w-full"
                      >
                        下载会场效果图
                      </button>
                      <button 
                        onClick={downloadHeaderArea} 
-                       className="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-[8px] text-xs w-full"
+                       className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2.5 rounded-[8px] text-xs w-full"
                      >
                        下载头图切图x3
                      </button>
@@ -1186,7 +1186,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
             
             {/* 中屏 */}
             <div className="bg-white p-4 rounded-2xl shadow-md space-y-3" style={{ borderRadius: '12px' }}>
-              <h3 className="font-bold text-lg pb-2 mb-3">首页Banner (中屏)</h3>
+              <h3 className="font-black text-lg pb-2 mb-3">首页Banner (中屏)</h3>
                 <div className="text-xs font-bold">文字编辑</div>
                 <div>
                   <input 
@@ -1253,19 +1253,19 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
                    <div className="flex flex-col gap-2">
                      <button 
                        onClick={() => download('中屏整图375x812.png', { left: SCREEN_2_X, top: 0, width: PHONE_WIDTH, height: PHONE_HEIGHT })} 
-                       className="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-[8px] text-xs w-full"
+                       className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2.5 rounded-[8px] text-xs w-full"
                      >
                        下载效果图
                      </button>
                      <button 
                        onClick={() => download('Banner359x104.png', { left: BANNER_OFFSET_X, top: BANNER_OFFSET_Y, width: BANNER_W, height: BANNER_H })} 
-                       className="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-[8px] text-xs w-full"
+                       className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2.5 rounded-[8px] text-xs w-full"
                      >
                        下载banner整图切图x3
                      </button>
                      <button 
                        onClick={downloadBannerCutArea} 
-                       className="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-[8px] text-xs w-full"
+                       className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2.5 rounded-[8px] text-xs w-full"
                      >
                        下载图区切图x3
                      </button>
@@ -1275,7 +1275,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
 
             {/* 右屏 */}
             <div className="bg-white p-4 rounded-2xl shadow-md space-y-3" style={{ borderRadius: '12px' }}>
-              <h3 className="font-bold text-lg pb-2 mb-3">活动弹窗 (右屏)</h3>
+              <h3 className="font-black text-lg pb-2 mb-3">活动弹窗 (右屏)</h3>
                 <div className="text-xs font-bold">文字编辑</div>
                 <div>
                   <input 
@@ -1335,7 +1335,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
 
             {/* 领券弹窗配置 */}
             <div className="bg-white p-4 rounded-2xl shadow-md space-y-3" style={{ borderRadius: '12px' }}>
-              <h3 className="font-bold text-lg pb-2 mb-3">领券弹窗 (右2)</h3>
+              <h3 className="font-black text-lg pb-2 mb-3">领券弹窗 (右2)</h3>
                 <div className="text-xs font-bold">文字编辑</div>
                 <div>
                   <input 
@@ -1401,7 +1401,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
 
             {/* AIO 配置 */}
             <div className="bg-white p-4 rounded-2xl shadow-md space-y-3" style={{ borderRadius: '12px' }}>
-              <h3 className="font-bold text-lg pb-2 mb-3">AIO分享图 (右3)</h3>
+              <h3 className="font-black text-lg pb-2 mb-3">AIO分享图 (右3)</h3>
                 <div className="text-xs font-bold">文字编辑</div>
                 <textarea className="w-full border text-xs p-1 h-12 rounded-[8px]" style={{ backgroundColor: '#F3F3F5' }} value={aioDescText} onChange={e => setAioDescText(e.target.value)} placeholder="描述文案"/>
                 <div>
