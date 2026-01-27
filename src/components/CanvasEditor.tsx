@@ -1049,7 +1049,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
 
   return (
     <div className="flex flex-1 h-full bg-gray-900 overflow-hidden">
-        <div className="w-[480px] border-r border-gray-700 p-5 flex flex-col gap-4 overflow-y-auto shrink-0 text-gray-800 h-full z-10" style={{ backgroundColor: '#F0F1F4' }}>
+        <div className="w-[360px] border-r border-gray-700 p-5 flex flex-col gap-4 overflow-y-auto shrink-0 text-gray-800 h-full z-10" style={{ backgroundColor: '#F0F1F4' }}>
             {/* 一键标准化 */}
             <div className="bg-white p-4 rounded-2xl shadow-md space-y-3" style={{ borderRadius: '12px' }}>
               <h3 className="font-bold text-lg pb-2 mb-3">一键标准化</h3>
