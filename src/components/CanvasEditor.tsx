@@ -988,7 +988,39 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     });
   }
   const downloadHeaderArea = () => { if(!fabricCanvas) return; const mask = findObjectById(ID_TOP_MASK); let maskVisible = true; if(mask) { maskVisible = mask.visible!; mask.visible = false; } const headerObj = findObjectById(ID_HEADER_LAYER); let headerRx = 0; let headerRy = 0; let headerClipPath: any = null; if(headerObj) { if(headerObj instanceof fabric.Rect) { headerRx = headerObj.rx || 0; headerRy = headerObj.ry || 0; headerObj.set({ rx: 0, ry: 0 }); } else if(headerObj instanceof fabric.Image && headerObj.clipPath) { headerClipPath = headerObj.clipPath; const clipRect = headerClipPath as fabric.Rect; headerRx = clipRect.rx || 0; headerRy = clipRect.ry || 0; clipRect.set({ rx: 0, ry: 0 }); } } const headerW = PHONE_WIDTH; const headerH = 250 * SCALE_FACTOR; fabricCanvas.renderAll(); setTimeout(() => { const dataURL = fabricCanvas.toDataURL({ format: 'png', quality: 1, multiplier: 1, left: SCREEN_1_X, top: 0, width: headerW, height: headerH }); if(headerObj) { if(headerObj instanceof fabric.Rect) { headerObj.set({ rx: headerRx, ry: headerRy }); } else if(headerObj instanceof fabric.Image && headerClipPath) { (headerClipPath as fabric.Rect).set({ rx: headerRx, ry: headerRy }); } } if(mask) mask.visible = maskVisible; fabricCanvas.renderAll(); const link = document.createElement('a'); link.download = `头图375x250_${Date.now()}.png`; link.href = dataURL; document.body.appendChild(link); link.click(); document.body.removeChild(link); }, 50); }
-  const downloadTicketArea = () => { if(!fabricCanvas) return; const phoneBg = findObjectById(ID_TICKET_PHONE_BG); let wasVisible = true; if(phoneBg) { wasVisible = phoneBg.visible!; phoneBg.visible = false; } const originalBg = fabricCanvas.backgroundColor || '#111827'; fabricCanvas.setBackgroundColor('', () => { fabricCanvas.renderAll(); setTimeout(() => { const dataURL = fabricCanvas.toDataURL({ format: 'png', quality: 1, multiplier: 1, left: SCREEN_4_X, top: TICKET_CONTAINER_Y, width: TICKET_CONTAINER_W, height: TICKET_CONTAINER_H }); fabricCanvas.setBackgroundColor(originalBg, () => { if(phoneBg) phoneBg.visible = wasVisible; fabricCanvas.renderAll(); const link = document.createElement('a'); link.download = `领券弹窗区域375x556_${Date.now()}.png`; link.href = dataURL; document.body.appendChild(link); link.click(); document.body.removeChild(link); }); }, 50); }); }
+  const downloadTicketArea = () => { 
+    if(!fabricCanvas) return; 
+    const phoneBg = findObjectById(ID_TICKET_PHONE_BG); 
+    let phoneBgVisible = true; 
+    if(phoneBg) { 
+      phoneBgVisible = phoneBg.visible!; 
+      phoneBg.visible = false; 
+    } 
+    const ticketLayer = findObjectById(ID_TICKET_LAYER);
+    let ticketLayerVisible = true;
+    if(ticketLayer) {
+      ticketLayerVisible = ticketLayer.visible!;
+      ticketLayer.visible = false;
+    }
+    const originalBg = fabricCanvas.backgroundColor || '#111827'; 
+    fabricCanvas.setBackgroundColor('', () => { 
+      fabricCanvas.renderAll(); 
+      setTimeout(() => { 
+        const dataURL = fabricCanvas.toDataURL({ format: 'png', quality: 1, multiplier: 1, left: SCREEN_4_X, top: TICKET_CONTAINER_Y, width: TICKET_CONTAINER_W, height: TICKET_CONTAINER_H }); 
+        fabricCanvas.setBackgroundColor(originalBg, () => { 
+          if(phoneBg) phoneBg.visible = phoneBgVisible; 
+          if(ticketLayer) ticketLayer.visible = ticketLayerVisible;
+          fabricCanvas.renderAll(); 
+          const link = document.createElement('a'); 
+          link.download = `领券弹窗区域375x556_${Date.now()}.png`; 
+          link.href = dataURL; 
+          document.body.appendChild(link); 
+          link.click(); 
+          document.body.removeChild(link); 
+        }); 
+      }, 50); 
+    }); 
+  }
   const downloadAioFull = () => { 
       if(!fabricCanvas) return;
     const originalBg = fabricCanvas.backgroundColor || '#111827';
