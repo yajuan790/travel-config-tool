@@ -430,8 +430,8 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
           top: 0,
           scaleX: PHONE_WIDTH / img.width!,
           scaleY: PHONE_HEIGHT / img.height!,
-          selectable: false,
-          evented: false,
+            selectable: false,
+            evented: false,
           data: { id: ID_TOP_MASK, zIndex: Z_INDEX.MASK }
         });
         canvas.add(img);
@@ -617,7 +617,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     
     const bMain = findObjectById(ID_BANNER_TEXT_MAIN) as fabric.IText; 
     if(bMain) { 
-      bMain.set({ text: bannerMainText, fill: '#1B222A' }); 
+      bMain.set({ text: bannerMainText, fill: '#1B222A', fontFamily: 'PingFang SC', fontWeight: 900 }); 
       const styles: any = { 0: {} };
       // 自动识别并高亮所有数字、"元"和"折"字
       for(let i = 0; i < bannerMainText.length; i++) {
@@ -679,7 +679,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
       const subTitleY = FRAME_ABS_Y + px(28) + 4 + 4 + 16 + 10;
       const priceTop = subTitleY + px(16 + 8) - 4 - 4 - 8 - 8 - 4;
       const priceHeight = px(43);
-      pMainT.set({ text: popupMainTitle, top: priceTop + priceHeight + px(14) - 8 - 8 + 2 + 2 });
+      pMainT.set({ text: popupMainTitle, top: priceTop + priceHeight + px(14) - 8 - 8 + 2 + 2, fontFamily: 'PingFang SC', fontWeight: 900 });
     }
     const pBtnT = findObjectById(ID_POPUP_BTN_TEXT) as fabric.Text; if(pBtnT) pBtnT.set({ text: popupBtnText });
 
@@ -846,7 +846,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
         if(old)fabricCanvas.remove(old); 
         const s=Math.max(PHONE_WIDTH/img.width!,(250*SCALE_FACTOR)/img.height!); 
         img.set({left:0,top:0,scaleX:s,scaleY:s,selectable:false,evented:false,clipPath:new fabric.Rect({left:0,top:0,width:PHONE_WIDTH,height:250*SCALE_FACTOR,rx:px(40),ry:px(40),absolutePositioned:true}),data:{id:ID_HEADER_LAYER,zIndex:Z_INDEX.GRADIENT}}); 
-        fabricCanvas.add(img); 
+        fabricCanvas.add(img);
         sortLayers(); 
       }); 
       // 同步替换AIO的210x168区域背景图
@@ -907,7 +907,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     const originalBg = fabricCanvas.backgroundColor || '#111827';
     if (isFullScreen) {
       fabricCanvas.setBackgroundColor('', () => {
-        fabricCanvas.renderAll();
+    fabricCanvas.renderAll();
         setTimeout(() => { 
           const dataURL = fabricCanvas.toDataURL({ format: 'png', quality: 1, multiplier: 1, ...opts }); 
           fabricCanvas.setBackgroundColor(originalBg, () => {
@@ -925,18 +925,18 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
       fabricCanvas.renderAll(); 
       setTimeout(() => { 
         const dataURL = fabricCanvas.toDataURL({ format: 'png', quality: 1, multiplier: 1, ...opts }); 
-        const link = document.createElement('a'); 
+    const link = document.createElement('a');
         link.download = name; 
-        link.href = dataURL; 
-        document.body.appendChild(link); 
-        link.click(); 
-        document.body.removeChild(link); 
+    link.href = dataURL;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
       }, 50); 
     }
   }
   const downloadRedBoxArea = () => { if(!fabricCanvas) return; const phoneBg = findObjectById(ID_MIDDLE_PHONE_BG); const bannerBg = findObjectById(ID_BANNER_BG); let pbv=true, bbv=true; if(phoneBg){pbv=phoneBg.visible!; phoneBg.visible=false;} if(bannerBg){bbv=bannerBg.visible!; bannerBg.visible=false;} fabricCanvas.renderAll(); setTimeout(()=>{ const dataURL=fabricCanvas.toDataURL({format:'png',quality:1,multiplier:1,left:BANNER_OFFSET_X,top:BANNER_OFFSET_Y,width:px(92),height:104*SCALE_FACTOR}); if(phoneBg)phoneBg.visible=pbv; if(bannerBg)bannerBg.visible=bbv; fabricCanvas.renderAll(); const link=document.createElement('a'); link.download=`banner_icon_${Date.now()}.png`; link.href=dataURL; document.body.appendChild(link); link.click(); document.body.removeChild(link); },50); }
   const downloadBannerCutArea = () => { 
-    if(!fabricCanvas) return; 
+      if(!fabricCanvas) return;
     const phoneBg = findObjectById(ID_MIDDLE_PHONE_BG); 
     const bannerBg = findObjectById(ID_BANNER_BG); 
     let pbv=true, bbv=true; 
@@ -1073,8 +1073,8 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
                       />
                     );
                   })}
-                </div>
-              </div>
+            </div>
+            </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-700 font-bold">素材图:</span>
                 <label className="flex-1 px-3 py-1.5 text-xs bg-white border border-gray-300 rounded-[8px] cursor-pointer hover:bg-gray-50 text-gray-700 text-center">
@@ -1318,19 +1318,19 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
                       maxLength={6}
                     />
                     <div className="text-[10px] text-gray-400 mt-0.5">{Math.min(popupMainTitle.length, 6)}/6</div>
-                  </div>
+                </div>
                   <div className="flex flex-col">
                     <input type="text" className="w-20 border text-xs p-1 rounded-[8px]" style={{ backgroundColor: '#F3F3F5' }} value={popupBtnText} onChange={e => setPopupBtnText(e.target.value)} placeholder="点击领券"/>
                     <div className="text-[10px] text-gray-400 mt-0.5 opacity-0">0/0</div>
-                  </div>
-                </div>
+            </div>
+            </div>
                 <div className="border-t border-gray-200 my-2 pt-2">
                    <div className="text-xs font-bold mb-2">下载操作</div>
                    <div className="flex flex-col gap-2">
                      <button onClick={() => download('弹窗全图375x812.png', { left: SCREEN_3_X, top: 0, width: PHONE_WIDTH, height: PHONE_HEIGHT })} className="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-[8px] text-xs w-full">下载效果图</button>
                      <button onClick={downloadPopupArea} className="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-[8px] text-xs w-full">下载切图x3</button>
-                   </div>
-                </div>
+            </div>
+        </div>
             </div>
 
             {/* 领券弹窗配置 */}
