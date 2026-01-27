@@ -1,4 +1,5 @@
 /* 引入本地字体文件（注意大小写，避免在 Linux 服务器上 404） */
+/* MF FangHei 字体 */
 @font-face {
   font-family: 'MF FangHei';
   src: url('/fonts/MFFangHei.TTF') format('truetype');
@@ -7,7 +8,6 @@
   font-display: swap;
 }
 
-/* Heavy/粗体版本，如果后续有单独文件可以替换 src */
 @font-face {
   font-family: 'MF FangHei';
   src: url('/fonts/MFFangHei.TTF') format('truetype');
@@ -16,13 +16,63 @@
   font-display: swap;
 }
 
-/* 将苹方名统一映射到本地文件，避免非 mac 机器缺失字体 */
+/* PingFang SC 字体 - 完整字重定义 */
 @font-face {
   font-family: 'PingFang SC';
   src: local('PingFang SC'),
        local('PingFang-SC-Regular'),
-       url('/fonts/MFFangHei.TTF') format('truetype');
+       url('/fonts/PINGFANG%20REGULAR.TTF') format('truetype');
   font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PingFang SC';
+  src: local('PingFang SC Light'),
+       local('PingFang-SC-Light'),
+       url('/fonts/PINGFANG%20LIGHT.TTF') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PingFang SC';
+  src: local('PingFang SC Medium'),
+       local('PingFang-SC-Medium'),
+       url('/fonts/PINGFANG%20MEDIUM.TTF') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PingFang SC';
+  src: local('PingFang SC Bold'),
+       local('PingFang-SC-Bold'),
+       url('/fonts/PINGFANG%20BOLD.TTF') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PingFang SC';
+  src: local('PingFang SC Heavy'),
+       local('PingFang-SC-Heavy'),
+       url('/fonts/PINGFANG%20HEAVY.TTF') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PingFang SC';
+  src: local('PingFang SC ExtraLight'),
+       local('PingFang-SC-ExtraLight'),
+       url('/fonts/PINGFANG%20EXTRALIGHT.TTF') format('truetype');
+  font-weight: 200;
   font-style: normal;
   font-display: swap;
 }
@@ -56,6 +106,15 @@
   font-family: 'DIN';
   src: url('/fonts/DIN-Black.otf') format('opentype');
   font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* DIN-Bold 别名，兼容代码中直接使用 'DIN-Bold' 作为字体名称 */
+@font-face {
+  font-family: 'DIN-Bold';
+  src: url('/fonts/DIN-Bold.otf') format('opentype');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
