@@ -1,24 +1,63 @@
-/* 引入本地字体文件 */
+/* 引入本地字体文件（注意大小写，避免在 Linux 服务器上 404） */
 @font-face {
   font-family: 'MF FangHei';
-  src: url('/fonts/MFFangHei.ttf') format('truetype');
-  font-weight: normal;
+  src: url('/fonts/MFFangHei.TTF') format('truetype');
+  font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 
-/* 如果有专门的 Heavy 字重文件，可以再定义一个，或者让浏览器模拟粗体 */
+/* Heavy/粗体版本，如果后续有单独文件可以替换 src */
 @font-face {
   font-family: 'MF FangHei';
-  src: url('/fonts/MFFangHei.ttf') format('truetype'); /* 如果有专门的粗体文件请替换这里的路径 */
-  font-weight: 900; /* 对应 Heavy */
+  src: url('/fonts/MFFangHei.TTF') format('truetype');
+  font-weight: 900;
   font-style: normal;
+  font-display: swap;
+}
+
+/* 将苹方名统一映射到本地文件，避免非 mac 机器缺失字体 */
+@font-face {
+  font-family: 'PingFang SC';
+  src: local('PingFang SC'),
+       local('PingFang-SC-Regular'),
+       url('/fonts/MFFangHei.TTF') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* DIN 字体族，不同字重共用一个 family 名称，方便在代码中通过 font-weight 控制 */
+@font-face {
+  font-family: 'DIN';
+  src: url('/fonts/DIN-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'DIN';
-  src: url('/fonts/DIN-Bold.otf'); /* 对应你截图里的文件名 */
-  font-weight: bold;
+  src: url('/fonts/DIN-Medium.otf') format('opentype');
+  font-weight: 500;
   font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DIN';
+  src: url('/fonts/DIN-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DIN';
+  src: url('/fonts/DIN-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
 }
 
 @tailwind base;
@@ -27,7 +66,9 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  /* 优先使用苹方 / 方黑 / 微软雅黑，保证中英混排在各平台上都比较稳定 */
+  font-family: 'PingFang SC', 'MF FangHei', 'Microsoft YaHei',
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
