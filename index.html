@@ -14,6 +14,65 @@
     <link rel="preload" href="/fonts/DIN-Light.otf" as="font" type="font/otf" crossorigin="anonymous" />
     <link rel="preload" href="/fonts/DIN-Medium.otf" as="font" type="font/otf" crossorigin="anonymous" />
     <link rel="preload" href="/fonts/DIN-Black.otf" as="font" type="font/otf" crossorigin="anonymous" />
+    <!-- 内联关键字体定义，确保浏览器在解析HTML时就开始加载字体 -->
+    <!-- 使用font-display: swap确保文字先显示，字体加载完成后自动替换 -->
+    <style>
+      @font-face {
+        font-family: 'MF FangHei';
+        src: url('/fonts/MFFangHei.TTF') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'MF FangHei';
+        src: url('/fonts/MFFangHei.TTF') format('truetype');
+        font-weight: 900;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'PingFang SC';
+        src: local('PingFang SC'),
+             local('PingFang-SC-Regular'),
+             url('/fonts/PINGFANG%20REGULAR.TTF') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'PingFang SC';
+        src: local('PingFang SC Bold'),
+             local('PingFang-SC-Bold'),
+             url('/fonts/PINGFANG%20BOLD.TTF') format('truetype');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'PingFang SC';
+        src: local('PingFang SC Heavy'),
+             local('PingFang-SC-Heavy'),
+             url('/fonts/PINGFANG%20HEAVY.TTF') format('truetype');
+        font-weight: 900;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'DIN';
+        src: url('/fonts/DIN-Bold.otf') format('opentype');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'DIN-Bold';
+        src: url('/fonts/DIN-Bold.otf') format('opentype');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
