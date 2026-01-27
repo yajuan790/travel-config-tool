@@ -1332,8 +1332,8 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
                 <div className="border-t border-gray-200 my-2 pt-2">
                    <div className="text-xs font-bold mb-2">下载操作</div>
                    <div className="flex flex-col gap-2">
-                     <button onClick={() => download('弹窗全图375x812.png', { left: SCREEN_3_X, top: 0, width: PHONE_WIDTH, height: PHONE_HEIGHT })} className="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-[8px] text-xs w-full">下载效果图</button>
-                     <button onClick={downloadPopupArea} className="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-[8px] text-xs w-full">下载切图x3</button>
+                     <button onClick={() => download('弹窗全图375x812.png', { left: SCREEN_3_X, top: 0, width: PHONE_WIDTH, height: PHONE_HEIGHT })} className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2.5 rounded-[8px] text-xs w-full" style={{ fontWeight: 700 }}>下载效果图</button>
+                     <button onClick={downloadPopupArea} className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2.5 rounded-[8px] text-xs w-full" style={{ fontWeight: 700 }}>下载切图x3</button>
             </div>
         </div>
             </div>
@@ -1398,8 +1398,8 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
                 <div className="border-t border-gray-200 my-2 pt-2">
                    <div className="text-xs font-bold mb-2">下载操作</div>
                    <div className="flex flex-col gap-2">
-                     <button onClick={() => download('领券弹窗全图375x812.png', { left: SCREEN_4_X, top: 0, width: PHONE_WIDTH, height: PHONE_HEIGHT })} className="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-[8px] text-xs w-full">下载效果图</button>
-                     <button onClick={downloadTicketArea} className="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-[8px] text-xs w-full">下载切图x3</button>
+                     <button onClick={() => download('领券弹窗全图375x812.png', { left: SCREEN_4_X, top: 0, width: PHONE_WIDTH, height: PHONE_HEIGHT })} className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2.5 rounded-[8px] text-xs w-full" style={{ fontWeight: 700 }}>下载效果图</button>
+                     <button onClick={downloadTicketArea} className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2.5 rounded-[8px] text-xs w-full" style={{ fontWeight: 700 }}>下载切图x3</button>
                    </div>
                 </div>
             </div>
@@ -1490,8 +1490,8 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
                 <div className="border-t border-gray-200 my-2 pt-2">
                    <div className="text-xs font-bold mb-2">下载操作</div>
                    <div className="flex flex-col gap-2">
-                     <button onClick={downloadAioFull} className="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-[8px] text-xs w-full">下载效果图</button>
-                     <button onClick={downloadAioCut} className="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-[8px] text-xs w-full">下载切图x3</button>
+                     <button onClick={downloadAioFull} className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2.5 rounded-[8px] text-xs w-full" style={{ fontWeight: 700 }}>下载效果图</button>
+                     <button onClick={downloadAioCut} className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2.5 rounded-[8px] text-xs w-full" style={{ fontWeight: 700 }}>下载切图x3</button>
                    </div>
                 </div>
             </div>
