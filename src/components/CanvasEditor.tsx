@@ -409,8 +409,8 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     headerRect.set('fill', new fabric.Gradient({ type: 'linear', coords: { x1: 0, y1: 250*SCALE_FACTOR, x2: 0, y2: 0 }, colorStops: [{ offset: 0, color: headerGradient.bottom }, { offset: 1, color: headerGradient.top }] }));
     const assetSize = px(164);
     const placeholder = new fabric.Rect({ left: SCREEN_1_X + PHONE_WIDTH - assetSize, top: px(56), width: assetSize, height: assetSize, fill: '#00FFFF', opacity: 0.3, selectable: false, evented: false, data: { id: ID_ASSET_PLACEHOLDER, zIndex: Z_INDEX.ASSET } });
-    const textSubObj = new fabric.IText(subTitle, { left: px(20), top: px(108), fontSize: px(16), fill: '#000000', fontFamily: 'PingFang SC', fontWeight: 900, data: { id: ID_TEXT_SUB, zIndex: Z_INDEX.CONTENT_HIGH } });
-    const textMainObj = new fabric.IText(mainTitle, { left: px(20), top: px(108 + 24 - 3), fontSize: px(32), fill: mainTitleColor, fontFamily: 'MF FangHei', fontWeight: 'normal', data: { id: ID_TEXT_MAIN, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const textSubObj = new fabric.IText(subTitle, { left: px(20), top: px(108), fontSize: px(16), fill: '#000000', fontFamily: 'PingFang SC', fontWeight: 900, selectable: true, evented: true, data: { id: ID_TEXT_SUB, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const textMainObj = new fabric.IText(mainTitle, { left: px(20), top: px(108 + 24 - 3), fontSize: px(32), fill: mainTitleColor, fontFamily: 'MF FangHei', fontWeight: 'normal', selectable: true, evented: true, data: { id: ID_TEXT_MAIN, zIndex: Z_INDEX.CONTENT_HIGH } });
     canvas.add(bgRect, headerRect, placeholder, textSubObj, textMainObj);
     // 立即排序并渲染左屏元素
     const leftScreenObjs = [bgRect, headerRect, placeholder, textSubObj, textMainObj];
@@ -436,14 +436,14 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     const iconImage = new fabric.Rect({ left: iconX, top: iconY, width: iconBgSize, height: iconBgSize, fill: 'transparent', opacity: 0, selectable: false, evented: false, data: { id: ID_BANNER_ICON_IMAGE, zIndex: Z_INDEX.ASSET } });
 
     const textLeftBase = BANNER_OFFSET_X + px(96); const textTopBase = BANNER_OFFSET_Y + px(16);
-    const bannerMainTxt = new fabric.IText(bannerMainText, { left: textLeftBase, top: textTopBase, fontSize: px(16), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#1B222A', data: { id: ID_BANNER_TEXT_MAIN, zIndex: Z_INDEX.CONTENT_HIGH } });
-    const bannerSubTxt = new fabric.Text(bannerSubText, { left: textLeftBase, top: textTopBase + px(16 + 7), fontSize: px(11), fontFamily: 'PingFang SC', fontWeight: 500, fill: '#666', data: { id: ID_BANNER_TEXT_SUB, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const bannerMainTxt = new fabric.IText(bannerMainText, { left: textLeftBase, top: textTopBase, fontSize: px(16), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#1B222A', selectable: true, evented: true, data: { id: ID_BANNER_TEXT_MAIN, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const bannerSubTxt = new fabric.Text(bannerSubText, { left: textLeftBase, top: textTopBase + px(16 + 7), fontSize: px(11), fontFamily: 'PingFang SC', fontWeight: 500, fill: '#666', selectable: true, evented: true, data: { id: ID_BANNER_TEXT_SUB, zIndex: Z_INDEX.CONTENT_HIGH } });
     const tagHeight = px(19); const tagTopY = BANNER_OFFSET_Y + BANNER_H - px(16) - tagHeight;
     const tagBg = new fabric.Rect({ left: textLeftBase, top: tagTopY, width: px(50), height: tagHeight, rx: px(6), ry: px(6), fill: '#FFE4DC', selectable: false, evented: false, data: { id: ID_BANNER_TAG_BG, zIndex: Z_INDEX.CONTENT_LOW } });
-    const bannerTagTxt = new fabric.Text(bannerTagText, { left: textLeftBase, top: tagTopY + tagHeight/2, fontSize: px(11), fill: '#FF5024', fontFamily: 'PingFang SC', fontWeight: 900, originX: 'center', originY: 'center', data: { id: ID_BANNER_TAG_TEXT, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const bannerTagTxt = new fabric.Text(bannerTagText, { left: textLeftBase, top: tagTopY + tagHeight/2, fontSize: px(11), fill: '#FF5024', fontFamily: 'PingFang SC', fontWeight: 900, originX: 'center', originY: 'center', selectable: true, evented: true, data: { id: ID_BANNER_TAG_TEXT, zIndex: Z_INDEX.CONTENT_HIGH } });
     const btnW = px(66); const btnH = px(32); const btnX = BANNER_OFFSET_X + BANNER_W - px(12) - btnW; const btnY = BANNER_OFFSET_Y + px(36);
     const btnBg = new fabric.Rect({ left: btnX, top: btnY, width: btnW, height: btnH, rx: px(8), ry: px(8), fill: '#FF5500', selectable: false, evented: false, data: { id: ID_BANNER_BTN_BG, zIndex: Z_INDEX.CONTENT_LOW } });
-    const btnTxt = new fabric.Text(bannerBtnText, { left: btnX + btnW/2, top: btnY + btnH/2, fontSize: px(14), fill: '#FFF', fontFamily: 'PingFang SC', fontWeight: 'bold', originX: 'center', originY: 'center', data: { id: ID_BANNER_BTN_TEXT, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const btnTxt = new fabric.Text(bannerBtnText, { left: btnX + btnW/2, top: btnY + btnH/2, fontSize: px(14), fill: '#FFF', fontFamily: 'PingFang SC', fontWeight: 'bold', originX: 'center', originY: 'center', selectable: true, evented: true, data: { id: ID_BANNER_BTN_TEXT, zIndex: Z_INDEX.CONTENT_HIGH } });
     canvas.add(bannerBg, iconBg, iconImage, tagBg, bannerTagTxt, bannerMainTxt, bannerSubTxt, btnBg, btnTxt);
     
     // ================= 3. 右屏 =================
@@ -460,13 +460,13 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     }});
     const pBtnW = px(167); const pBtnH = px(46); const pBtnX = SCREEN_3_X + (PHONE_WIDTH - pBtnW) / 2; const pBtnY = FRAME_ABS_Y + FRAME_H - px(15) - pBtnH;
     const pBtnBg = new fabric.Rect({ left: pBtnX, top: pBtnY, width: pBtnW, height: pBtnH, rx: px(8), ry: px(8), fill: '#FF5500', selectable: false, evented: false, data: { id: ID_POPUP_BTN_BG, zIndex: Z_INDEX.CONTENT_LOW } });
-    const pBtnTxt = new fabric.Text(popupBtnText, { left: pBtnX + pBtnW/2, top: pBtnY + pBtnH/2, fontSize: px(20), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#FFF', originX: 'center', originY: 'center', data: { id: ID_POPUP_BTN_TEXT, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const pBtnTxt = new fabric.Text(popupBtnText, { left: pBtnX + pBtnW/2, top: pBtnY + pBtnH/2, fontSize: px(20), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#FFF', originX: 'center', originY: 'center', selectable: true, evented: true, data: { id: ID_POPUP_BTN_TEXT, zIndex: Z_INDEX.CONTENT_HIGH } });
     const textCenterX = SCREEN_3_X + PHONE_WIDTH / 2; const subTitleY = FRAME_ABS_Y + px(28) + 4 + 4 + 16 + 10; 
-    const pSub = new fabric.Text(popupSubTitle, { left: textCenterX, top: subTitleY, fontSize: px(16), fontFamily: 'PingFang SC', fontWeight: 'bold', fill: '#333', originX: 'center', originY: 'top', data: { id: ID_POPUP_SUBTITLE, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const pSub = new fabric.Text(popupSubTitle, { left: textCenterX, top: subTitleY, fontSize: px(16), fontFamily: 'PingFang SC', fontWeight: 'bold', fill: '#333', originX: 'center', originY: 'top', selectable: true, evented: true, data: { id: ID_POPUP_SUBTITLE, zIndex: Z_INDEX.CONTENT_HIGH } });
     const redColor = '#FF5024'; const priceTop = subTitleY + px(16 + 8) - 4 - 4 - 8 - 8 - 4; const priceHeight = px(43); const priceCenterY = priceTop + priceHeight / 2 - px(2);
-    const pPriceText = new fabric.IText(popupPriceText, { left: textCenterX, top: priceCenterY, fontSize: px(43), fontFamily: 'MF FangHei', fill: redColor, originX: 'center', originY: 'center', data: { id: ID_POPUP_PRICE_NUM, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const pPriceText = new fabric.IText(popupPriceText, { left: textCenterX, top: priceCenterY, fontSize: px(43), fontFamily: 'MF FangHei', fill: redColor, originX: 'center', originY: 'center', selectable: true, evented: true, data: { id: ID_POPUP_PRICE_NUM, zIndex: Z_INDEX.CONTENT_HIGH } });
     const mainTitleY = priceTop + priceHeight + px(14) - 8 - 8 + 2 + 2;
-    const pMain = new fabric.Text(popupMainTitle, { left: textCenterX, top: mainTitleY, fontSize: px(26), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#333', originX: 'center', originY: 'top', data: { id: ID_POPUP_MAIN_TITLE, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const pMain = new fabric.Text(popupMainTitle, { left: textCenterX, top: mainTitleY, fontSize: px(26), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#333', originX: 'center', originY: 'top', selectable: true, evented: true, data: { id: ID_POPUP_MAIN_TITLE, zIndex: Z_INDEX.CONTENT_HIGH } });
     canvas.add(pSub, pPriceText, pMain, pBtnBg, pBtnTxt);
 
     // ================= 4. 领券弹窗 =================
@@ -477,8 +477,8 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     fabric.Image.fromURL(DEFAULT_IMGS.TICKET_LAYER, (img) => { if (img.getSrc()) { const tW = TICKET_LAYER_W; const tH = TICKET_LAYER_H; const tX = TICKET_LAYER_X; const tY = TICKET_LAYER_Y; const s = Math.max(tW / img.width!, tH / img.height!); const sW = img.width! * s; const sH = img.height! * s; const oX = (sW - tW) / 2; const oY = (sH - tH) / 2; img.set({ left: tX - oX, top: tY - oY, scaleX: s, scaleY: s, selectable: false, evented: false, clipPath: new fabric.Rect({ left: tX, top: tY, width: tW, height: tH, absolutePositioned: true }), data: { id: ID_TICKET_LAYER, zIndex: Z_INDEX.FRAME } }); canvas.add(img); sortLayers(canvas); }});
     const ticketAssetPlaceholder = new fabric.Rect({ left: TICKET_ASSET_X, top: TICKET_ASSET_Y, width: TICKET_ASSET_SIZE, height: TICKET_ASSET_SIZE, fill: '#00FFFF', opacity: 0.3, selectable: false, evented: false, data: { id: ID_TICKET_ASSET_IMAGE, zIndex: Z_INDEX.ASSET } });
     canvas.add(ticketAssetPlaceholder);
-    const ticketSub = new fabric.IText(ticketSubTitle, { left: TICKET_SUBTITLE_X, top: TICKET_SUBTITLE_Y, fontSize: px(17), fontFamily: 'PingFang SC', fontWeight: 'bold', fill: '#000', originX: 'left', originY: 'top', data: { id: ID_TICKET_SUBTITLE, zIndex: Z_INDEX.CONTENT_HIGH } });
-    const ticketTitle = new fabric.IText(ticketTitleText, { left: TICKET_TITLE_X, top: TICKET_TITLE_Y, fontSize: px(24), fontFamily: 'MF FangHei', fill: '#000000', originX: 'left', originY: 'top', data: { id: ID_TICKET_TITLE, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const ticketSub = new fabric.IText(ticketSubTitle, { left: TICKET_SUBTITLE_X, top: TICKET_SUBTITLE_Y, fontSize: px(17), fontFamily: 'PingFang SC', fontWeight: 'bold', fill: '#000', originX: 'left', originY: 'top', selectable: true, evented: true, data: { id: ID_TICKET_SUBTITLE, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const ticketTitle = new fabric.IText(ticketTitleText, { left: TICKET_TITLE_X, top: TICKET_TITLE_Y, fontSize: px(24), fontFamily: 'MF FangHei', fill: '#000000', originX: 'left', originY: 'top', selectable: true, evented: true, data: { id: ID_TICKET_TITLE, zIndex: Z_INDEX.CONTENT_HIGH } });
     const ticketTitleStyles: any = {};
     if (!ticketTitleStyles[0]) ticketTitleStyles[0] = {};
     // 遍历文本，数字部分使用DIN-Bold，其他使用MF FangHei
@@ -506,12 +506,12 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     }
     ticketTitle.set('styles', ticketTitleStyles);
     const ticketBtnBg = new fabric.Rect({ left: TICKET_BTN_X, top: TICKET_BTN_Y, width: TICKET_BTN_W, height: TICKET_BTN_H, rx: px(8), ry: px(8), fill: '#FF5500', selectable: false, evented: false, data: { id: ID_TICKET_BTN_BG, zIndex: Z_INDEX.CONTENT_LOW } });
-    const ticketBtnTxt = new fabric.Text(ticketBtnText, { left: TICKET_BTN_X + TICKET_BTN_W/2, top: TICKET_BTN_Y + TICKET_BTN_H/2, fontSize: px(18), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#FFF', originX: 'center', originY: 'center', data: { id: ID_TICKET_BTN_TEXT, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const ticketBtnTxt = new fabric.Text(ticketBtnText, { left: TICKET_BTN_X + TICKET_BTN_W/2, top: TICKET_BTN_Y + TICKET_BTN_H/2, fontSize: px(18), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#FFF', originX: 'center', originY: 'center', selectable: true, evented: true, data: { id: ID_TICKET_BTN_TEXT, zIndex: Z_INDEX.CONTENT_HIGH } });
     canvas.add(ticketSub, ticketTitle, ticketBtnBg, ticketBtnTxt);
 
     // ================= 5. AIO 屏 =================
     fabric.Image.fromURL(DEFAULT_IMGS.AIO_BG, (img) => { const tX=SCREEN_5_X; if(img.getSrc()){ const s=Math.max(PHONE_WIDTH/img.width!,PHONE_HEIGHT/img.height!); img.set({left:tX,top:0,scaleX:s,scaleY:s,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:0,width:PHONE_WIDTH,height:PHONE_HEIGHT,absolutePositioned:true}),data:{id:ID_AIO_PHONE_BG,zIndex:Z_INDEX.PHONE_BG}}); canvas.add(img); sortLayers(canvas); }});
-    const aioDesc = new fabric.Textbox(aioDescText, { left: AIO_CARD_X, top: AIO_DESC_Y, width: AIO_CARD_W, fontSize: px(13), fontFamily: 'PingFang SC', fontWeight: 500, fill: '#333', splitByGrapheme: true, data: { id: ID_AIO_DESC_TEXT, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const aioDesc = new fabric.Textbox(aioDescText, { left: AIO_CARD_X, top: AIO_DESC_Y, width: AIO_CARD_W, fontSize: px(13), fontFamily: 'PingFang SC', fontWeight: 500, fill: '#333', splitByGrapheme: true, selectable: true, evented: true, data: { id: ID_AIO_DESC_TEXT, zIndex: Z_INDEX.CONTENT_HIGH } });
     canvas.add(aioDesc);
     const aioCard = new fabric.Rect({ left: AIO_CARD_X, top: AIO_CARD_Y, width: AIO_CARD_W, height: AIO_CARD_H, selectable: false, evented: false, data: { id: ID_AIO_CARD_BG, zIndex: Z_INDEX.GRADIENT } });
     aioCard.set('fill', new fabric.Gradient({ type: 'linear', coords: { x1: 0, y1: AIO_CARD_H, x2: 0, y2: 0 }, colorStops: [{ offset: 0, color: aioGradient.bottom }, { offset: 1, color: aioGradient.top }] }));
@@ -520,9 +520,9 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     const aioAssetPlaceholder = new fabric.Rect({ left: aioAssetX, top: aioAssetY, width: aioAssetSize, height: aioAssetSize, fill: '#00FFFF', opacity: 0.3, selectable: false, evented: false, data: { id: ID_AIO_ASSET_IMAGE, zIndex: Z_INDEX.ASSET } });
     canvas.add(aioAssetPlaceholder);
     const aioBaseLeft = AIO_CARD_X + px(9); 
-    const aioSub1 = new fabric.Text(aioSubTitleTop, { left: aioBaseLeft, top: AIO_CARD_Y + px(16), fontSize: px(12), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#1B222A', data: { id: ID_AIO_SUBTITLE_TOP, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const aioSub1 = new fabric.Text(aioSubTitleTop, { left: aioBaseLeft, top: AIO_CARD_Y + px(16), fontSize: px(12), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#1B222A', selectable: true, evented: true, data: { id: ID_AIO_SUBTITLE_TOP, zIndex: Z_INDEX.CONTENT_HIGH } });
     const aTitleTop = AIO_CARD_Y + px(16 + 12 + 8); const aTitleHeight = px(33); const aTitleCenterY = aTitleTop + aTitleHeight / 2 - 8 - 4 - px(2);
-    const aioTitle = new fabric.IText(aioTitleText, { left: aioBaseLeft, top: aTitleCenterY, fontSize: px(26), fontFamily: 'MF FangHei', fill: '#000000', originY: 'center', data: { id: ID_AIO_TITLE, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const aioTitle = new fabric.IText(aioTitleText, { left: aioBaseLeft, top: aTitleCenterY, fontSize: px(26), fontFamily: 'MF FangHei', fill: '#000000', originY: 'center', selectable: true, evented: true, data: { id: ID_AIO_TITLE, zIndex: Z_INDEX.CONTENT_HIGH } });
     const aioTitleStylesInit: any = {};
     if (!aioTitleStylesInit[0]) aioTitleStylesInit[0] = {};
     const aioNumDeltaY = 22;
@@ -542,10 +542,10 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     }
     aioTitle.set('styles', aioTitleStylesInit);
     const sub2Top = aTitleTop + aTitleHeight + px(8) - 4; 
-    const aioSub2 = new fabric.Text(aioSubTitleBottom, { left: aioBaseLeft, top: sub2Top, fontSize: px(13), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#1B222A', data: { id: ID_AIO_SUBTITLE_BOTTOM, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const aioSub2 = new fabric.Text(aioSubTitleBottom, { left: aioBaseLeft, top: sub2Top, fontSize: px(13), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#1B222A', selectable: true, evented: true, data: { id: ID_AIO_SUBTITLE_BOTTOM, zIndex: Z_INDEX.CONTENT_HIGH } });
     const aBtnY = AIO_CARD_Y + AIO_CARD_H - px(41) - px(28) + px(5); const aBtnX = aioBaseLeft;
     const aioBtnBg = new fabric.Rect({ left: aBtnX, top: aBtnY, width: px(66), height: px(28), rx: px(8), ry: px(8), fill: '#FF5500', selectable: false, evented: false, data: { id: ID_AIO_BTN_BG, zIndex: Z_INDEX.CONTENT_LOW } });
-    const aioBtnTxt = new fabric.Text(aioBtnText, { left: aBtnX + px(33), top: aBtnY + px(14), fontSize: px(14), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#FFF', originX: 'center', originY: 'center', data: { id: ID_AIO_BTN_TEXT, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const aioBtnTxt = new fabric.Text(aioBtnText, { left: aBtnX + px(33), top: aBtnY + px(14), fontSize: px(14), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#FFF', originX: 'center', originY: 'center', selectable: true, evented: true, data: { id: ID_AIO_BTN_TEXT, zIndex: Z_INDEX.CONTENT_HIGH } });
     canvas.add(aioSub1, aioTitle, aioSub2, aioBtnBg, aioBtnTxt);
 
     setTimeout(() => { sortLayers(canvas); canvas.requestRenderAll(); }, 500);
