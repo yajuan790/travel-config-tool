@@ -212,7 +212,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
 
   // --- 状态定义 ---
   // 全局背景色渐变（用于一键替换所有页面）
-  const [globalBgGradient, setGlobalBgGradient] = useState({ bottom: '#FFEDEB', top: '#FFD3CA' });
+  const [globalBgGradient, setGlobalBgGradient] = useState({ bottom: '#EBF8FF', top: '#AAF2FE' });
   
   // 左屏 - 发券会场背景渐变（375x812区域自动跟随全局渐变）
   // 将全局渐变转换为发券会场格式（由下至上 #F7F7F6 → 全局渐变的底部颜色）
@@ -422,6 +422,23 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
       }
     });
     canvas.renderAll();
+    // 默认加载境外打车图层
+    fabric.Image.fromURL(DEFAULT_IMGS.MASK_JINGWAI, (img) => {
+      if (img.getSrc()) {
+        img.set({
+          left: SCREEN_1_X,
+          top: 0,
+          scaleX: PHONE_WIDTH / img.width!,
+          scaleY: PHONE_HEIGHT / img.height!,
+          selectable: false,
+          evented: false,
+          data: { id: ID_TOP_MASK, zIndex: Z_INDEX.MASK }
+        });
+        canvas.add(img);
+        sortLayers(canvas);
+        canvas.renderAll();
+      }
+    });
 
     // 2. 中屏
     fabric.Image.fromURL(DEFAULT_IMGS.MIDDLE_BG, (img) => { if(img.getSrc()){ img.set({ left: SCREEN_2_X, top: 0, scaleX: Math.max(PHONE_WIDTH/img.width!, PHONE_HEIGHT/img.height!), scaleY: Math.max(PHONE_WIDTH/img.width!, PHONE_HEIGHT/img.height!), selectable: false, evented: false, clipPath: new fabric.Rect({ left: SCREEN_2_X, top: 0, width: PHONE_WIDTH, height: PHONE_HEIGHT, absolutePositioned: true }), data: { id: ID_MIDDLE_PHONE_BG, zIndex: Z_INDEX.PHONE_BG } }); canvas.add(img); sortLayers(canvas); }});
