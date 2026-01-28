@@ -307,10 +307,11 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
   const TICKET_LAYER_Y = TICKET_GRADIENT_Y + TICKET_GRADIENT_H - TICKET_LAYER_H;
   const TICKET_ASSET_SIZE = px(106);
   const TICKET_ASSET_X = SCREEN_4_X + PHONE_WIDTH - TICKET_ASSET_SIZE - px(56);
-  // 素材区整体上移 30px（预览和下载仍保留完整106x106图）
-  const TICKET_ASSET_Y = TICKET_GRADIENT_Y - px(30);
+  // 在原来基础上整体下移 15px（= 相对渐变区域上移 15px）
+  const TICKET_ASSET_Y = TICKET_GRADIENT_Y - px(15);
   const TICKET_SUBTITLE_X = TICKET_GRADIENT_X + px(11.5) + px(2);
-  const TICKET_SUBTITLE_Y = TICKET_GRADIENT_Y + px(24);
+  // 副标题整体下移 4px
+  const TICKET_SUBTITLE_Y = TICKET_GRADIENT_Y + px(24 + 4);
   const TICKET_TITLE_X = TICKET_GRADIENT_X + px(11.5) + px(2);
   const TICKET_TITLE_Y = TICKET_GRADIENT_Y + px(33) + px(9) - px(8) + px(7);
   const TICKET_BTN_W = px(198);
