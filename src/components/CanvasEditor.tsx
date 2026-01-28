@@ -307,8 +307,8 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
   const TICKET_LAYER_Y = TICKET_GRADIENT_Y + TICKET_GRADIENT_H - TICKET_LAYER_H;
   const TICKET_ASSET_SIZE = px(106);
   const TICKET_ASSET_X = SCREEN_4_X + PHONE_WIDTH - TICKET_ASSET_SIZE - px(56);
-  // 素材区放在渐变区域内部：从顶部往下 10px，更靠近标题下方
-  const TICKET_ASSET_Y = TICKET_GRADIENT_Y + px(10);
+  // 素材区域位置恢复为紧贴 247x239 渐变区域顶部（不再额外偏移）
+  const TICKET_ASSET_Y = TICKET_GRADIENT_Y;
   const TICKET_SUBTITLE_X = TICKET_GRADIENT_X + px(11.5) + px(2);
   // 副标题整体下移 4px
   const TICKET_SUBTITLE_Y = TICKET_GRADIENT_Y + px(24 + 4);
@@ -969,7 +969,8 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     fabricCanvas.setBackgroundColor('', () => {
       fabricCanvas.renderAll(); 
       setTimeout(()=>{ 
-        const dataURL=fabricCanvas.toDataURL({format:'png',quality:1,multiplier:3,left:BANNER_OFFSET_X,top:BANNER_OFFSET_Y,width:px(92),height:104*SCALE_FACTOR}); 
+        // 提高导出倍数到 4，使 92x104 小图区更清晰
+        const dataURL=fabricCanvas.toDataURL({format:'png',quality:1,multiplier:4,left:BANNER_OFFSET_X,top:BANNER_OFFSET_Y,width:px(92),height:104*SCALE_FACTOR}); 
         if(phoneBg)phoneBg.visible=pbv; 
         if(bannerBg)bannerBg.visible=bbv; 
         fabricCanvas.setBackgroundColor(originalBg, () => {
