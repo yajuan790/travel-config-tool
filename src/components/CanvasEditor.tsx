@@ -307,7 +307,8 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
   const TICKET_LAYER_Y = TICKET_GRADIENT_Y + TICKET_GRADIENT_H - TICKET_LAYER_H;
   const TICKET_ASSET_SIZE = px(106);
   const TICKET_ASSET_X = SCREEN_4_X + PHONE_WIDTH - TICKET_ASSET_SIZE - px(56);
-  const TICKET_ASSET_Y = TICKET_GRADIENT_Y;
+  // 素材区整体上移 10px（预览和下载仍保留完整106x106图）
+  const TICKET_ASSET_Y = TICKET_GRADIENT_Y - px(10);
   const TICKET_SUBTITLE_X = TICKET_GRADIENT_X + px(11.5) + px(2);
   const TICKET_SUBTITLE_Y = TICKET_GRADIENT_Y + px(24);
   const TICKET_TITLE_X = TICKET_GRADIENT_X + px(11.5) + px(2);
@@ -828,7 +829,28 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
       fabric.Image.fromURL(result, (img) => { const old=findObjectById(ID_ASSET_IMAGE); if(old)fabricCanvas.remove(old); findObjectById(ID_ASSET_PLACEHOLDER)?.set({opacity:0}); const tW=px(164),tH=px(164),tX=PHONE_WIDTH-tW,tY=px(56); const s=Math.max(tW/img.width!,tH/img.height!); img.set({scaleX:s,scaleY:s,left:tX-(img.width!*s-tW)/2,top:tY-(img.height!*s-tH)/2,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:tY,width:tW,height:tH,absolutePositioned:true}),data:{id:ID_ASSET_IMAGE,zIndex:Z_INDEX.ASSET}}); fabricCanvas.add(img); sortLayers(); });
       fabric.Image.fromURL(result, (img2) => { const old=findObjectById(ID_BANNER_ICON_IMAGE); if(old)fabricCanvas.remove(old); findObjectById(ID_BANNER_ICON_PLACEHOLDER)?.set({opacity:0}); const iconBgSize = px(73); const iconBgX = BANNER_OFFSET_X + px(12); const iconBgY = BANNER_OFFSET_Y + (BANNER_H - iconBgSize)/2; const tS=px(80); const s=Math.max(tS/img2.width!,tS/img2.height!); const imgWidth = img2.width! * s; const imgHeight = img2.height! * s; const tX = iconBgX + iconBgSize - tS; const tY = iconBgY + iconBgSize - tS; img2.set({scaleX:s,scaleY:s,left:tX-(imgWidth-tS)/2,top:tY-(imgHeight-tS)/2,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:tY,width:tS,height:tS,rx:px(8),ry:px(8),absolutePositioned:true}),data:{id:ID_BANNER_ICON_IMAGE,zIndex:Z_INDEX.ASSET}}); fabricCanvas.add(img2); sortLayers(); });
       fabric.Image.fromURL(result, (img3) => { const old=findObjectById(ID_POPUP_ASSET_IMAGE); if(old)fabricCanvas.remove(old); const tSize=px(200),tX=SCREEN_3_X+(PHONE_WIDTH-tSize)/2,tY=POPUP_CONTAINER_Y+px(4); const s=Math.max(tSize/img3.width!,tSize/img3.height!); img3.set({left:tX-(img3.width!*s-tSize)/2,top:tY,scaleX:s,scaleY:s,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:tY,width:tSize,height:tSize,absolutePositioned:true}),data:{id:ID_POPUP_ASSET_IMAGE,zIndex:Z_INDEX.POPUP_ASSET}}); fabricCanvas.add(img3); sortLayers(); });
-      fabric.Image.fromURL(result, (img4) => { const old = findObjectById(ID_TICKET_ASSET_IMAGE); if(old) fabricCanvas.remove(old); const tW = TICKET_ASSET_SIZE; const tH = TICKET_ASSET_SIZE; const tX = TICKET_ASSET_X; const tY = TICKET_ASSET_Y; const s = Math.max(tW/img4.width!, tH/img4.height!); img4.set({left:tX-(img4.width!*s-tW)/2, top:tY-(img4.height!*s-tH)/2, scaleX:s, scaleY:s, selectable:false, evented:false, clipPath:new fabric.Rect({left:TICKET_GRADIENT_X,top:TICKET_GRADIENT_Y,width:TICKET_GRADIENT_W,height:TICKET_GRADIENT_H,absolutePositioned:true}),data:{id:ID_TICKET_ASSET_IMAGE, zIndex: Z_INDEX.ASSET}}); fabricCanvas.add(img4); sortLayers(); fabricCanvas.requestRenderAll(); });
+      fabric.Image.fromURL(result, (img4) => { 
+        const old = findObjectById(ID_TICKET_ASSET_IMAGE); 
+        if(old) fabricCanvas.remove(old); 
+        const tW = TICKET_ASSET_SIZE; 
+        const tH = TICKET_ASSET_SIZE; 
+        const tX = TICKET_ASSET_X; 
+        const tY = TICKET_ASSET_Y; 
+        const s = Math.max(tW/img4.width!, tH/img4.height!); 
+        // 不再裁剪到247x239区域，保留完整106x106素材图
+        img4.set({
+          left: tX-(img4.width!*s-tW)/2, 
+          top: tY-(img4.height!*s-tH)/2, 
+          scaleX: s, 
+          scaleY: s, 
+          selectable: false, 
+          evented: false, 
+          data:{id:ID_TICKET_ASSET_IMAGE, zIndex: Z_INDEX.ASSET}
+        }); 
+        fabricCanvas.add(img4); 
+        sortLayers(); 
+        fabricCanvas.requestRenderAll(); 
+      });
       fabric.Image.fromURL(result, (img5) => { const old = findObjectById(ID_AIO_ASSET_IMAGE); if(old) fabricCanvas.remove(old); const tW=px(115); const tH=px(115); const tX=AIO_CARD_X + AIO_CARD_W - tW; const tY=AIO_CARD_Y + AIO_CARD_H - tH; const s=Math.max(tW/img5.width!, tH/img5.height!); img5.set({left:tX-(img5.width!*s-tW)/2, top:tY-(img5.height!*s-tH)/2, scaleX:s, scaleY:s, selectable:false, evented:false, clipPath:new fabric.Rect({left:tX,top:tY,width:tW,height:tH,absolutePositioned:true}),data:{id:ID_AIO_ASSET_IMAGE, zIndex: Z_INDEX.ASSET}}); fabricCanvas.add(img5); sortLayers(); fabricCanvas.requestRenderAll(); });
     };
     reader.readAsDataURL(file);
