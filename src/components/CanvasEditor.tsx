@@ -969,8 +969,8 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     fabricCanvas.setBackgroundColor('', () => {
       fabricCanvas.renderAll(); 
       setTimeout(()=>{ 
-        // 提高导出倍数到 4，使 92x104 小图区更清晰
-        const dataURL=fabricCanvas.toDataURL({format:'png',quality:1,multiplier:4,left:BANNER_OFFSET_X,top:BANNER_OFFSET_Y,width:px(92),height:104*SCALE_FACTOR}); 
+        // multiplier 设为 1：画布尺寸本身是原图的 3 倍，导出即为原尺寸 3 倍
+        const dataURL=fabricCanvas.toDataURL({format:'png',quality:1,multiplier:1,left:BANNER_OFFSET_X,top:BANNER_OFFSET_Y,width:px(92),height:104*SCALE_FACTOR}); 
         if(phoneBg)phoneBg.visible=pbv; 
         if(bannerBg)bannerBg.visible=bbv; 
         fabricCanvas.setBackgroundColor(originalBg, () => {
@@ -1285,7 +1285,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
                        下载效果图
                      </button>
                      <button 
-                       onClick={() => download('Banner359x104.png', { left: BANNER_OFFSET_X, top: BANNER_OFFSET_Y, width: BANNER_W, height: BANNER_H, multiplier: 3 })} 
+                       onClick={() => download('Banner359x104.png', { left: BANNER_OFFSET_X, top: BANNER_OFFSET_Y, width: BANNER_W, height: BANNER_H, multiplier: 1 })} 
                        className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2.5 rounded-[8px] text-xs w-full"
                        style={{ fontWeight: 700 }}
                      >
