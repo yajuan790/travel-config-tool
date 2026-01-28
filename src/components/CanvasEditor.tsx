@@ -307,8 +307,8 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
   const TICKET_LAYER_Y = TICKET_GRADIENT_Y + TICKET_GRADIENT_H - TICKET_LAYER_H;
   const TICKET_ASSET_SIZE = px(106);
   const TICKET_ASSET_X = SCREEN_4_X + PHONE_WIDTH - TICKET_ASSET_SIZE - px(56);
-  // 在原来基础上整体下移 15px（= 相对渐变区域上移 15px）
-  const TICKET_ASSET_Y = TICKET_GRADIENT_Y - px(15);
+  // 素材区放在渐变区域内部：从顶部往下 10px，更靠近标题下方
+  const TICKET_ASSET_Y = TICKET_GRADIENT_Y + px(10);
   const TICKET_SUBTITLE_X = TICKET_GRADIENT_X + px(11.5) + px(2);
   // 副标题整体下移 4px
   const TICKET_SUBTITLE_Y = TICKET_GRADIENT_Y + px(24 + 4);
