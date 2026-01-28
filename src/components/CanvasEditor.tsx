@@ -307,8 +307,8 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
   const TICKET_LAYER_Y = TICKET_GRADIENT_Y + TICKET_GRADIENT_H - TICKET_LAYER_H;
   const TICKET_ASSET_SIZE = px(106);
   const TICKET_ASSET_X = SCREEN_4_X + PHONE_WIDTH - TICKET_ASSET_SIZE - px(56);
-  // 素材区整体上移 10px（预览和下载仍保留完整106x106图）
-  const TICKET_ASSET_Y = TICKET_GRADIENT_Y - px(10);
+  // 素材区整体上移 30px（预览和下载仍保留完整106x106图）
+  const TICKET_ASSET_Y = TICKET_GRADIENT_Y - px(30);
   const TICKET_SUBTITLE_X = TICKET_GRADIENT_X + px(11.5) + px(2);
   const TICKET_SUBTITLE_Y = TICKET_GRADIENT_Y + px(24);
   const TICKET_TITLE_X = TICKET_GRADIENT_X + px(11.5) + px(2);
