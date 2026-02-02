@@ -200,12 +200,13 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<fabric.Canvas | null>(null);
 
-  const LEFT_SUB_LIMIT = 13;
+  const LEFT_SUB_LIMIT = 11;
   const LEFT_MAIN_LIMIT = 8;
   const BANNER_MAIN_LIMIT = 11;
   const BANNER_SUB_LIMIT = 14;
   const TICKET_SUBTITLE_LIMIT = 8;
   const TICKET_TITLE_LIMIT = 6;
+  const POPUP_PRICE_LIMIT = 5;
   const AIO_SUBTITLE_TOP_LIMIT = 11;
   const AIO_TITLE_LIMIT = 6;
   const AIO_SUBTITLE_BOTTOM_LIMIT = 7;
@@ -245,6 +246,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
   const [popupBtnText, setPopupBtnText] = useState('点击领券');
   const [isComposingPopupSubTitle, setIsComposingPopupSubTitle] = useState(false);
   const [isComposingPopupMainTitle, setIsComposingPopupMainTitle] = useState(false);
+  const [isComposingPopupPriceText, setIsComposingPopupPriceText] = useState(false);
 
   // 领券弹窗 - 使用全局渐变
   const ticketGradient = globalBgGradient;
@@ -364,6 +366,12 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
   }, [popupMainTitle, isComposingPopupMainTitle]);
 
   useEffect(() => {
+    if (!isComposingPopupPriceText && popupPriceText.length > POPUP_PRICE_LIMIT) {
+      setPopupPriceText(popupPriceText.slice(0, POPUP_PRICE_LIMIT));
+    }
+  }, [popupPriceText, isComposingPopupPriceText]);
+
+  useEffect(() => {
     if (!isComposingAioSubTitleTop && aioSubTitleTop.length > AIO_SUBTITLE_TOP_LIMIT) {
       setAioSubTitleTop(aioSubTitleTop.slice(0, AIO_SUBTITLE_TOP_LIMIT));
     }
@@ -409,10 +417,50 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     bgRect.set('fill', new fabric.Gradient({ type: 'linear', coords: { x1: 0, y1: PHONE_HEIGHT, x2: 0, y2: 0 }, colorStops: [{ offset: 0, color: bgColorBottom }, { offset: 1, color: bgColorTop }] }));
     const headerRect = new fabric.Rect({ left: SCREEN_1_X, top: 0, width: PHONE_WIDTH, height: 250*SCALE_FACTOR, rx: px(40), ry: px(40), selectable: false, evented: false, data: { id: ID_HEADER_LAYER, zIndex: Z_INDEX.GRADIENT } });
     headerRect.set('fill', new fabric.Gradient({ type: 'linear', coords: { x1: 0, y1: 250*SCALE_FACTOR, x2: 0, y2: 0 }, colorStops: [{ offset: 0, color: headerGradient.bottom }, { offset: 1, color: headerGradient.top }] }));
-    const assetSize = px(164);
-    const placeholder = new fabric.Rect({ left: SCREEN_1_X + PHONE_WIDTH - assetSize, top: px(56), width: assetSize, height: assetSize, fill: '#00FFFF', opacity: 0.3, selectable: false, evented: false, data: { id: ID_ASSET_PLACEHOLDER, zIndex: Z_INDEX.ASSET } });
-    const textSubObj = new fabric.IText(subTitle, { left: px(20), top: px(108), fontSize: px(16), fill: '#000000', fontFamily: 'PingFang SC', fontWeight: 900, selectable: false, evented: false, data: { id: ID_TEXT_SUB, zIndex: Z_INDEX.CONTENT_HIGH } });
-    const textMainObj = new fabric.IText(mainTitle, { left: px(20), top: px(108 + 24 - 3), fontSize: px(32), fill: mainTitleColor, fontFamily: 'MF FangHei', fontWeight: 'normal', selectable: false, evented: false, data: { id: ID_TEXT_MAIN, zIndex: Z_INDEX.CONTENT_HIGH } });
+    // 根据主标题长度动态计算字号和素材区域尺寸
+    const mainTitleLen = mainTitle.length;
+    const isShortTitle = mainTitleLen <= 6;
+    const charFontSize = isShortTitle ? px(33) : px(30);
+    const numFontSize = charFontSize * 1.35;
+    const charSpacing = charFontSize * 0.03; // 字间距3%
+    const numSpacing = -px(1); // DIN数字字间距-1px
+    const assetSize = isShortTitle ? px(182) : px(164);
+    
+    const placeholder = new fabric.Rect({ left: SCREEN_1_X + PHONE_WIDTH - assetSize + px(10), top: px(56), width: assetSize, height: assetSize, fill: '#00FFFF', opacity: 0.3, selectable: false, evented: false, data: { id: ID_ASSET_PLACEHOLDER, zIndex: Z_INDEX.ASSET } });
+    const textSubObj = new fabric.IText(subTitle, { left: px(20), top: px(108), fontSize: px(19), fill: '#000000', fontFamily: 'PingFang SC', fontWeight: 900, selectable: false, evented: false, data: { id: ID_TEXT_SUB, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const textMainObj = new fabric.IText(mainTitle, { left: px(20), top: px(108 + 24 - 3 - 10), fontSize: charFontSize, fill: mainTitleColor, fontFamily: 'MF FangHei', fontWeight: 'normal', selectable: false, evented: false, data: { id: ID_TEXT_MAIN, zIndex: Z_INDEX.CONTENT_HIGH } });
+    
+    // 应用字间距和数字样式，计算纵向对齐的deltaY
+    // 可根据视觉效果调整这些值来优化纵向对齐
+    const numDeltaY = 30; // 数字deltaY值，可调整
+    const charDeltaY = (numFontSize - charFontSize) / 2; // 汉字deltaY值，可调整
+    
+    const mainTitleStyles: any = {};
+    if (!mainTitleStyles[0]) mainTitleStyles[0] = {};
+    for(let i = 0; i < mainTitle.length; i++) {
+      const char = mainTitle[i];
+      if (/\d/.test(char)) {
+        mainTitleStyles[0][i] = { 
+          fill: '#FF5024', 
+          fontFamily: 'DIN', 
+          fontWeight: 'bold', 
+          fontSize: numFontSize, 
+          deltaX: numSpacing,
+          deltaY: numDeltaY
+        };
+      } else {
+        // 汉字：应用字间距3%，下移使底部对齐
+        mainTitleStyles[0][i] = { 
+          fontSize: charFontSize,
+          deltaX: charSpacing,
+          deltaY: charDeltaY
+        };
+        if (char === '元' || char === '折') {
+          mainTitleStyles[0][i].fill = '#FF5024';
+        }
+      }
+    }
+    textMainObj.set('styles', mainTitleStyles);
     canvas.add(bgRect, headerRect, placeholder, textSubObj, textMainObj);
     // 立即排序并渲染左屏元素
     const leftScreenObjs = [bgRect, headerRect, placeholder, textSubObj, textMainObj];
@@ -471,7 +519,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     const popupGradBg = new fabric.Rect({ left: gradBgX, top: gradBgY, width: gradBgW, height: gradBgH, rx: px(20), ry: px(20), selectable: false, evented: false, data: { id: ID_POPUP_GRADIENT_BG, zIndex: Z_INDEX.GRADIENT } });
     popupGradBg.set('fill', new fabric.Gradient({ type: 'linear', coords: { x1: 0, y1: gradBgH, x2: 0, y2: 0 }, colorStops: [{ offset: 0, color: popupGradient.bottom }, { offset: 1, color: popupGradient.top }] }));
     canvas.add(popupGradBg);
-    const popupAssetSize = px(200); const popupAssetX = SCREEN_3_X + (PHONE_WIDTH - popupAssetSize) / 2; const popupAssetY = POPUP_CONTAINER_Y + px(4);
+    const popupAssetSize = px(190); const popupAssetX = SCREEN_3_X + (PHONE_WIDTH - popupAssetSize) / 2; const popupAssetY = POPUP_CONTAINER_Y + px(14); // 底部距离不变，从200改为190，top上移10px
     const popupAssetPlaceholder = new fabric.Rect({ left: popupAssetX, top: popupAssetY, width: popupAssetSize, height: popupAssetSize, fill: '#00FFFF', opacity: 0.3, selectable: false, evented: false, data: { id: ID_POPUP_ASSET_IMAGE, zIndex: Z_INDEX.POPUP_ASSET } });
     canvas.add(popupAssetPlaceholder);
     fabric.Image.fromURL(DEFAULT_IMGS.POPUP_FRAME, (img) => { if (img.getSrc()) { const tW = FRAME_W; const tH = FRAME_H; const tX = FRAME_ABS_X; const tY = FRAME_ABS_Y; const s = Math.max(tW / img.width!, tH / img.height!); const sW = img.width! * s; const sH = img.height! * s; const oX = (sW - tW) / 2; const oY = (sH - tH) / 2; img.set({ left: tX - oX, top: tY - oY, scaleX: s, scaleY: s, selectable: false, evented: false, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 30, offsetX: 0, offsetY: 10 }), clipPath: new fabric.Rect({ left: tX, top: tY, width: tW, height: tH, absolutePositioned: true }), data: { id: ID_POPUP_FIXED_FRAME, zIndex: Z_INDEX.FRAME } }); canvas.add(img); sortLayers(canvas); } else {
@@ -483,7 +531,29 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     const textCenterX = SCREEN_3_X + PHONE_WIDTH / 2; const subTitleY = FRAME_ABS_Y + px(28) + 4 + 4 + 16 + 10; 
     const pSub = new fabric.Text(popupSubTitle, { left: textCenterX, top: subTitleY, fontSize: px(16), fontFamily: 'PingFang SC', fontWeight: 'bold', fill: '#333', originX: 'center', originY: 'top', selectable: false, evented: false, data: { id: ID_POPUP_SUBTITLE, zIndex: Z_INDEX.CONTENT_HIGH } });
     const redColor = '#FF5024'; const priceTop = subTitleY + px(16 + 8) - 4 - 4 - 8 - 8 - 4; const priceHeight = px(43); const priceCenterY = priceTop + priceHeight / 2 - px(2);
-    const pPriceText = new fabric.IText(popupPriceText, { left: textCenterX, top: priceCenterY, fontSize: px(43), fontFamily: 'MF FangHei', fill: redColor, originX: 'center', originY: 'center', selectable: false, evented: false, data: { id: ID_POPUP_PRICE_NUM, zIndex: Z_INDEX.CONTENT_HIGH } });
+    const pPriceText = new fabric.IText(popupPriceText, { left: textCenterX, top: priceCenterY, fontSize: px(32), fontFamily: 'MF FangHei', fill: redColor, originX: 'center', originY: 'center', selectable: false, evented: false, data: { id: ID_POPUP_PRICE_NUM, zIndex: Z_INDEX.CONTENT_HIGH } });
+    
+    // 应用活动弹窗主标题样式：汉字间距3%，DIN数字字号为汉字1.35倍，数字间距-1px
+    const popupCharFontSize = px(32);
+    const popupNumFontSize = popupCharFontSize * 1.35;
+    const popupCharSpacing = popupCharFontSize * 0.03; // 汉字间距3%
+    const popupNumSpacing = -px(1); // 数字间距-1px
+    const popupNumDeltaY = 30;
+    const popupCharDeltaY = (popupNumFontSize - popupCharFontSize) / 2;
+    const popupPriceStyles: any = {};
+    if (!popupPriceStyles[0]) popupPriceStyles[0] = {};
+    for(let i = 0; i < popupPriceText.length; i++) {
+      const char = popupPriceText[i];
+      if (/\d/.test(char)) {
+        popupPriceStyles[0][i] = { fontFamily: 'DIN', fontWeight: 'bold', fontSize: popupNumFontSize, deltaY: popupNumDeltaY, deltaX: popupNumSpacing };
+      } else if (char === '元' || char === '折') {
+        popupPriceStyles[0][i] = { fontFamily: 'MF FangHei', fontWeight: 'normal', fontSize: popupCharFontSize, fill: '#FF5024', deltaY: popupCharDeltaY, deltaX: popupCharSpacing };
+      } else {
+        popupPriceStyles[0][i] = { fontFamily: 'MF FangHei', fontWeight: 'normal', fontSize: popupCharFontSize, deltaY: popupCharDeltaY, deltaX: popupCharSpacing };
+      }
+    }
+    pPriceText.set('styles', popupPriceStyles);
+    
     const mainTitleY = priceTop + priceHeight + px(14) - 8 - 8 + 2 + 2;
     const pMain = new fabric.Text(popupMainTitle, { left: textCenterX, top: mainTitleY, fontSize: px(26), fontFamily: 'PingFang SC', fontWeight: 900, fill: '#333', originX: 'center', originY: 'top', selectable: false, evented: false, data: { id: ID_POPUP_MAIN_TITLE, zIndex: Z_INDEX.CONTENT_HIGH } });
     canvas.add(pSub, pPriceText, pMain, pBtnBg, pBtnTxt);
@@ -501,26 +571,24 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     const ticketTitleStyles: any = {};
     if (!ticketTitleStyles[0]) ticketTitleStyles[0] = {};
     // 遍历文本，数字部分使用DIN-Bold，其他使用MF FangHei
-    // 为了底部对齐，数字和汉字使用不同的deltaY
-    // 数字35px，汉字24px，需要调整使底部对齐
-    // 同时缩小数字和后方汉字之间的间距
-    const numDeltaY = 30; // 数字deltaY = 30
-    const charDeltaY = (px(35) - px(24)) / 2; // 汉字下移，使底部对齐
-    const spacingAdjust = -px(-24); // 统一缩小数字和汉字之间的间距（三个标题保持一致）
+    // 汉字字号24px，数字字号为汉字1.35倍，汉字间距3%，数字间距-1px
+    const ticketCharFontSize = px(24);
+    const ticketNumFontSize = ticketCharFontSize * 1.35;
+    const ticketCharSpacing = ticketCharFontSize * 0.03; // 汉字间距3%
+    const ticketNumSpacing = -px(1); // 数字间距-1px
+    const ticketNumDeltaY = 37; // 数字deltaY = 37
+    const ticketCharDeltaY = 26; // 汉字deltaY = 26px
     for (let i = 0; i < ticketTitleText.length; i++) {
       const char = ticketTitleText[i];
-      const prevChar = i > 0 ? ticketTitleText[i - 1] : '';
-      const isAfterDigit = /\d/.test(prevChar) && !/\d/.test(char);
       if (/\d/.test(char)) {
-        // 数字部分：DIN-Bold，字号35，高亮橙#FF5024，deltaY = 30
-        ticketTitleStyles[0][i] = { fontFamily: 'DIN', fontWeight: 'bold', fontSize: px(35), fill: '#FF5024', deltaY: numDeltaY };
-      } else if (char === '元') {
-        // "元"字：MF FangHei，字号24，高亮橙#FF5024，下移使底部对齐
-        ticketTitleStyles[0][i] = { fontFamily: 'MF FangHei', fontSize: px(24), fill: '#FF5024', deltaY: charDeltaY, ...(isAfterDigit ? { deltaX: spacingAdjust } : {}) };
+        // 数字部分：DIN-Bold，字号为汉字1.35倍，高亮橙#FF5024，间距-1px
+        ticketTitleStyles[0][i] = { fontFamily: 'DIN', fontWeight: 'bold', fontSize: ticketNumFontSize, fill: '#FF5024', deltaY: ticketNumDeltaY, deltaX: ticketNumSpacing };
+      } else if (char === '元' || char === '折') {
+        // "元"和"折"字：MF FangHei，字号24，高亮橙#FF5024，间距3%
+        ticketTitleStyles[0][i] = { fontFamily: 'MF FangHei', fontSize: ticketCharFontSize, fill: '#FF5024', deltaY: ticketCharDeltaY, deltaX: ticketCharSpacing };
       } else {
-        // 其他文字部分：MF FangHei，字号24，黑色，下移使底部对齐
-        // 如果前面是数字，使用统一的deltaX缩小间距
-        ticketTitleStyles[0][i] = { fontFamily: 'MF FangHei', fontSize: px(24), fill: '#000000', deltaY: charDeltaY, ...(isAfterDigit ? { deltaX: spacingAdjust } : {}) };
+        // 其他文字部分：MF FangHei，字号24，黑色，间距3%
+        ticketTitleStyles[0][i] = { fontFamily: 'MF FangHei', fontSize: ticketCharFontSize, fill: '#000000', deltaY: ticketCharDeltaY, deltaX: ticketCharSpacing };
       }
     }
     ticketTitle.set('styles', ticketTitleStyles);
@@ -544,19 +612,21 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     const aioTitle = new fabric.IText(aioTitleText, { left: aioBaseLeft, top: aTitleCenterY, fontSize: px(26), fontFamily: 'MF FangHei', fill: '#000000', originY: 'center', selectable: false, evented: false, data: { id: ID_AIO_TITLE, zIndex: Z_INDEX.CONTENT_HIGH } });
     const aioTitleStylesInit: any = {};
     if (!aioTitleStylesInit[0]) aioTitleStylesInit[0] = {};
-    const aioNumDeltaY = 22;
-    const aioCharDeltaY = (px(34) - px(26)) / 2;
-    const aioSpacingAdjust = -px(-24);
+    // 汉字字号26px，数字字号为汉字1.35倍，汉字间距3%，数字间距-1px
+    const aioCharFontSize = px(26);
+    const aioNumFontSize = aioCharFontSize * 1.35;
+    const aioCharSpacing = aioCharFontSize * 0.03; // 汉字间距3%
+    const aioNumSpacing = -px(1); // 数字间距-1px
+    const aioNumDeltaY = 26; // 数字deltaY = 26
+    const aioCharDeltaY = (aioNumFontSize - aioCharFontSize) / 2;
     for(let i = 0; i < aioTitleText.length; i++) {
       const char = aioTitleText[i];
-      const prevChar = i > 0 ? aioTitleText[i - 1] : '';
-      const isAfterDigit = /\d/.test(prevChar) && !/\d/.test(char);
       if (/\d/.test(char)) {
-        aioTitleStylesInit[0][i] = { fontFamily: 'DIN', fontWeight: 'bold', fontSize: px(34), fill: '#FF5024', deltaY: aioNumDeltaY };
+        aioTitleStylesInit[0][i] = { fontFamily: 'DIN', fontWeight: 'bold', fontSize: aioNumFontSize, fill: '#FF5024', deltaY: aioNumDeltaY, deltaX: aioNumSpacing };
       } else if (char === '元' || char === '折') {
-        aioTitleStylesInit[0][i] = { fontFamily: 'MF FangHei', fontWeight: 'normal', fontSize: px(26), fill: '#FF5024', deltaY: aioCharDeltaY, ...(isAfterDigit ? { deltaX: aioSpacingAdjust } : {}) };
+        aioTitleStylesInit[0][i] = { fontFamily: 'MF FangHei', fontWeight: 'normal', fontSize: aioCharFontSize, fill: '#FF5024', deltaY: aioCharDeltaY, deltaX: aioCharSpacing };
       } else {
-        aioTitleStylesInit[0][i] = { fontFamily: 'MF FangHei', fontWeight: 'normal', fontSize: px(26), fill: '#000000', deltaY: aioCharDeltaY, ...(isAfterDigit ? { deltaX: aioSpacingAdjust } : {}) };
+        aioTitleStylesInit[0][i] = { fontFamily: 'MF FangHei', fontWeight: 'normal', fontSize: aioCharFontSize, fill: '#000000', deltaY: aioCharDeltaY, deltaX: aioCharSpacing };
       }
     }
     aioTitle.set('styles', aioTitleStylesInit);
@@ -581,40 +651,78 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
         headerObj.set('fill', new fabric.Gradient({ type: 'linear', coords: { x1: 0, y1: headerObj.height!, x2: 0, y2: 0 }, colorStops: [{ offset: 0, color: headerGradient.bottom }, { offset: 1, color: headerGradient.top }] }));
     }
     const mainTxt = findObjectById(ID_TEXT_MAIN) as fabric.IText; 
-    console.log('mainTitle', mainTitle, mainTxt);
     if(mainTxt) { 
-      mainTxt.set({ text: mainTitle, fill: mainTitleColor, top: px(108 + 24 - 3) });
-      console.log('mainTxt', mainTxt);
+      // 根据主标题长度动态计算字号和素材区域尺寸
+      const mainTitleLen = mainTitle.length;
+      const isShortTitle = mainTitleLen <= 6;
+      const charFontSize = isShortTitle ? px(33) : px(30);
+      const numFontSize = charFontSize * 1.35;
+      const charSpacing = charFontSize * 0.03; // 字间距3%
+      const numSpacing = -px(1); // DIN数字字间距-1px
+      const assetSize = isShortTitle ? px(182) : px(164);
+      
+      mainTxt.set({ text: mainTitle, fill: mainTitleColor, top: px(108 + 24 - 3 - 10), fontSize: charFontSize });
+      
+      // 更新素材区域尺寸
+      const placeholder = findObjectById(ID_ASSET_PLACEHOLDER) as fabric.Rect;
+      if (placeholder) {
+        placeholder.set({ 
+          left: SCREEN_1_X + PHONE_WIDTH - assetSize + px(10), 
+          width: assetSize, 
+          height: assetSize 
+        });
+      }
+      const assetImg = findObjectById(ID_ASSET_IMAGE) as fabric.Image;
+      if (assetImg) {
+        const tX = SCREEN_1_X + PHONE_WIDTH - assetSize + px(10);
+        const tY = px(56);
+        assetImg.set({
+          left: tX - (assetImg.width! * assetImg.scaleX! - assetSize) / 2,
+          top: tY - (assetImg.height! * assetImg.scaleY! - assetSize) / 2
+        });
+        if (assetImg.clipPath && assetImg.clipPath instanceof fabric.Rect) {
+          assetImg.clipPath.set({ left: tX, top: tY, width: assetSize, height: assetSize });
+        }
+      }
+      
       const styles: any = {}; 
       if (!styles[0]) styles[0] = {};
-      const spacingAdjust = -px(-24); // 统一缩小数字和汉字之间的间距（三个标题保持一致）
-      const highlightFontSize = px(40);
-      const deltaY = 10; // deltaY设为10，调整数字和汉字的对齐
       
-      // 自动识别并高亮所有数字
+      // 应用字间距和数字样式，计算纵向对齐的deltaY
+      // 可根据视觉效果调整这些值来优化纵向对齐
+      const numDeltaY = 30; // 数字deltaY值，可调整
+      const charDeltaY = (numFontSize - charFontSize) / 2; // 汉字deltaY值，可调整
+      
       for(let i = 0; i < mainTitle.length; i++) {
         const char = mainTitle[i];
         if (/\d/.test(char)) {
-          styles[0][i] = { fill: '#FF5024', fontFamily: 'DIN', fontWeight: 'bold', fontSize: highlightFontSize, deltaY: deltaY };
-          // 如果数字后面有汉字，使用统一的deltaX缩小间距
-          if (i + 1 < mainTitle.length && !/\d/.test(mainTitle[i + 1])) {
-            if (!styles[0][i + 1]) styles[0][i + 1] = {};
-            styles[0][i + 1].deltaX = spacingAdjust;
+          styles[0][i] = { 
+            fill: '#FF5024', 
+            fontFamily: 'DIN', 
+            fontWeight: 'bold', 
+            fontSize: numFontSize, 
+            deltaX: numSpacing,
+            deltaY: numDeltaY
+          };
+        } else {
+          // 汉字：应用字间距3%，下移使底部对齐
+          styles[0][i] = { 
+            fontSize: charFontSize,
+            deltaX: charSpacing,
+            deltaY: charDeltaY
+          };
+          if (char === '元' || char === '折') {
+            styles[0][i].fill = '#FF5024';
           }
-        } else if (char === '元' || char === '折') {
-          // "元"和"折"字也改为高亮橙
-          if (!styles[0][i]) styles[0][i] = {};
-          styles[0][i].fill = '#FF5024';
         }
       }
       mainTxt.set('styles', styles); 
-      console.log('styles', styles);
       mainTxt.dirty = true;
       fabricCanvas.requestRenderAll();
     }
     const subTxt = findObjectById(ID_TEXT_SUB) as fabric.IText; 
     if(subTxt) { 
-      subTxt.set({ text: subTitle, fill: '#000000' }); 
+      subTxt.set({ text: subTitle, fill: '#000000', fontSize: px(19) }); 
     }
     
     const bMain = findObjectById(ID_BANNER_TEXT_MAIN) as fabric.IText; 
@@ -647,30 +755,29 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
       const priceTop = subTitleY + px(16 + 8) - 4 - 4 - 8 - 8 - 4;
       const priceHeight = px(43);
       const priceCenterY = priceTop + priceHeight / 2 - px(2);
-      pPriceT.set({ text: popupPriceText, fill: '#FF5024', top: priceCenterY });
+      pPriceT.set({ text: popupPriceText, fill: '#FF5024', top: priceCenterY, fontSize: px(32) });
       const styles: any = {};
       if (!styles[0]) styles[0] = {};
       // 遍历文本，数字部分使用DIN-Bold，其他使用MF FangHei
-      // 为了底部对齐，数字和汉字使用不同的deltaY
-      // 数字43px，汉字32px，需要调整使底部对齐
-      // 同时缩小数字和后方汉字之间的间距
-      const numDeltaY = 30; // 数字deltaY = 30
-      const charDeltaY = (px(43) - px(32)) / 2; // 汉字下移，使底部对齐
-      const spacingAdjust = -px(-24); // 统一缩小数字和汉字之间的间距（三个标题保持一致）
+      // 汉字字号32px，数字字号为汉字1.35倍，汉字间距3%，数字间距-1px
+      const popupCharFontSize = px(32);
+      const popupNumFontSize = popupCharFontSize * 1.35;
+      const popupCharSpacing = popupCharFontSize * 0.03; // 汉字间距3%
+      const popupNumSpacing = -px(1); // 数字间距-1px
+      const popupNumDeltaY = 30; // 数字deltaY = 30
+      const popupCharDeltaY = (popupNumFontSize - popupCharFontSize) / 2; // 汉字下移，使底部对齐
+      
       for(let i = 0; i < popupPriceText.length; i++) {
         const char = popupPriceText[i];
-        const prevChar = i > 0 ? popupPriceText[i - 1] : '';
-        const isAfterDigit = /\d/.test(prevChar) && !/\d/.test(char);
         if (/\d/.test(char)) {
-          // 数字部分：DIN-Bold，字号43，deltaY = 30
-          styles[0][i] = { fontFamily: 'DIN', fontWeight: 'bold', fontSize: px(43), deltaY: numDeltaY };
+          // 数字部分：DIN-Bold，字号为汉字1.35倍，间距-1px
+          styles[0][i] = { fontFamily: 'DIN', fontWeight: 'bold', fontSize: popupNumFontSize, deltaY: popupNumDeltaY, deltaX: popupNumSpacing };
         } else if (char === '元' || char === '折') {
-          // "元"和"折"字：MF FangHei，字号32，高亮橙#FF5024，下移使底部对齐
-          styles[0][i] = { fontFamily: 'MF FangHei', fontWeight: 'normal', fontSize: px(32), fill: '#FF5024', deltaY: charDeltaY, ...(isAfterDigit ? { deltaX: spacingAdjust } : {}) };
+          // "元"和"折"字：MF FangHei，字号32，高亮橙#FF5024，间距3%
+          styles[0][i] = { fontFamily: 'MF FangHei', fontWeight: 'normal', fontSize: popupCharFontSize, fill: '#FF5024', deltaY: popupCharDeltaY, deltaX: popupCharSpacing };
         } else {
-          // 其他汉字部分：MF FangHei，字号32，下移使底部对齐
-          // 如果前面是数字，使用统一的deltaX缩小间距
-          styles[0][i] = { fontFamily: 'MF FangHei', fontWeight: 'normal', fontSize: px(32), deltaY: charDeltaY, ...(isAfterDigit ? { deltaX: spacingAdjust } : {}) };
+          // 其他汉字部分：MF FangHei，字号32，间距3%
+          styles[0][i] = { fontFamily: 'MF FangHei', fontWeight: 'normal', fontSize: popupCharFontSize, deltaY: popupCharDeltaY, deltaX: popupCharSpacing };
         }
       }
       pPriceT.set('styles', styles);
@@ -692,33 +799,35 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     const tTitleObj = findObjectById(ID_TICKET_TITLE) as fabric.IText;
     if(tTitleObj) {
       tTitleObj.set({ text: ticketTitleText, fill: '#000000', left: TICKET_TITLE_X, top: TICKET_TITLE_Y });
+      // 先清除旧样式，确保新样式正确应用
+      tTitleObj.set('styles', {});
       const styles: any = {};
       if (!styles[0]) styles[0] = {};
       // 遍历文本，数字部分使用DIN-Bold，其他使用MF FangHei
-      // 为了底部对齐，数字和汉字使用不同的deltaY
-      // 数字35px，汉字24px，需要调整使底部对齐
-      // 同时缩小数字和后方汉字之间的间距
-      const numDeltaY = 30; // 数字deltaY = 30
-      const charDeltaY = (px(35) - px(24)) / 2; // 汉字下移，使底部对齐
-      const spacingAdjust = -px(-24); // 统一缩小数字和汉字之间的间距（三个标题保持一致）
+      // 汉字字号24px，数字字号为汉字1.35倍，汉字间距3%，数字间距-1px
+      const ticketCharFontSize = px(24);
+      const ticketNumFontSize = ticketCharFontSize * 1.35;
+      const ticketCharSpacing = ticketCharFontSize * 0.03; // 汉字间距3%
+      const ticketNumSpacing = -px(1); // 数字间距-1px
+      const ticketNumDeltaY = 37; // 数字deltaY = 37
+      const ticketCharDeltaY = 26; // 汉字deltaY = 26px
       for (let i = 0; i < ticketTitleText.length; i++) {
         const char = ticketTitleText[i];
-        const prevChar = i > 0 ? ticketTitleText[i - 1] : '';
-        const isAfterDigit = /\d/.test(prevChar) && !/\d/.test(char);
         if (/\d/.test(char)) {
-          // 数字部分：DIN-Bold，字号35，高亮橙#FF5024，deltaY = 30
-          styles[0][i] = { fontFamily: 'DIN', fontWeight: 'bold', fontSize: px(35), fill: '#FF5024', deltaY: numDeltaY };
+          // 数字部分：DIN-Bold，字号为汉字1.35倍，高亮橙#FF5024，间距-1px
+          styles[0][i] = { fontFamily: 'DIN', fontWeight: 'bold', fontSize: ticketNumFontSize, fill: '#FF5024', deltaY: ticketNumDeltaY, deltaX: ticketNumSpacing };
         } else if (char === '元' || char === '折') {
-          // "元"和"折"字：MF FangHei，字号24，高亮橙#FF5024，下移使底部对齐
-          styles[0][i] = { fontFamily: 'MF FangHei', fontSize: px(24), fill: '#FF5024', deltaY: charDeltaY, ...(isAfterDigit ? { deltaX: spacingAdjust } : {}) };
+          // "元"和"折"字：MF FangHei，字号24，高亮橙#FF5024，间距3%
+          styles[0][i] = { fontFamily: 'MF FangHei', fontSize: ticketCharFontSize, fill: '#FF5024', deltaY: ticketCharDeltaY, deltaX: ticketCharSpacing };
         } else {
-          // 其他文字部分：MF FangHei，字号24，黑色，下移使底部对齐
-          // 如果前面是数字，使用统一的deltaX缩小间距
-          styles[0][i] = { fontFamily: 'MF FangHei', fontSize: px(24), fill: '#000000', deltaY: charDeltaY, ...(isAfterDigit ? { deltaX: spacingAdjust } : {}) };
+          // 其他文字部分：MF FangHei，字号24，黑色，间距3%
+          styles[0][i] = { fontFamily: 'MF FangHei', fontSize: ticketCharFontSize, fill: '#000000', deltaY: ticketCharDeltaY, deltaX: ticketCharSpacing };
         }
       }
       tTitleObj.set('styles', styles);
       tTitleObj.dirty = true;
+      tTitleObj.setCoords();
+      fabricCanvas?.requestRenderAll();
     }
     const tBtnT = findObjectById(ID_TICKET_BTN_TEXT) as fabric.Text; if(tBtnT) tBtnT.set({ text: ticketBtnText });
 
@@ -734,44 +843,35 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
       const aTitleHeight = px(33);
       const aTitleCenterY = aTitleTop + aTitleHeight / 2 - 8 - 4 - px(2);
       aioTitleObj.set({ text: aioTitleText, fill: '#000000', top: aTitleCenterY });
+      // 先清除旧样式
+      aioTitleObj.set('styles', {});
       const styles: any = {};
       if (!styles[0]) styles[0] = {};
       // 遍历文本，数字部分使用红色和DIN-Bold，其他使用黑色和MF FangHei
-      // 为了底部对齐，数字和汉字使用不同的deltaY
-      // 数字34px，汉字26px，需要调整使底部对齐
-      // 同时缩小数字和后方汉字之间的间距
-      const numDeltaY = 22; // 数字deltaY = 22
-      const charDeltaY = (px(34) - px(26)) / 2; // 汉字下移，使底部对齐
-      const spacingAdjust = -px(-24); // 统一缩小数字和汉字之间的间距（三个标题保持一致）
+      // 汉字字号26px，数字字号为汉字1.35倍，汉字间距3%，数字间距-1px
+      const aioCharFontSize = px(26);
+      const aioNumFontSize = aioCharFontSize * 1.35;
+      const aioCharSpacing = aioCharFontSize * 0.03; // 汉字间距3%
+      const aioNumSpacing = -px(1); // 数字间距-1px
+      const aioNumDeltaY = 26; // 数字deltaY = 26
+      const aioCharDeltaY = (aioNumFontSize - aioCharFontSize) / 2; // 汉字下移，使底部对齐
       for(let i = 0; i < aioTitleText.length; i++) {
         const char = aioTitleText[i];
-        const prevChar = i > 0 ? aioTitleText[i - 1] : '';
-        const isAfterDigit = /\d/.test(prevChar) && !/\d/.test(char);
-        // 检查是否是数字后面的第一个汉字（前面是数字，且前面没有其他汉字）
-        let isFirstCharAfterDigit = false;
-        if (isAfterDigit) {
-          // 往前找，看是否直接是数字
-          let j = i - 1;
-          while (j >= 0 && /\d/.test(aioTitleText[j])) {
-            j--;
-          }
-          // 如果j < 0 或者 j位置不是数字，说明这是数字序列后的第一个字符
-          isFirstCharAfterDigit = (j < 0 || !/\d/.test(aioTitleText[j]));
-        }
         if (/\d/.test(char)) {
-          // 数字部分：DIN-Bold，字号34，红色
-          styles[0][i] = { fontFamily: 'DIN', fontWeight: 'bold', fontSize: px(34), fill: '#FF5024', deltaY: numDeltaY };
+          // 数字部分：DIN-Bold，字号为汉字1.35倍，红色，间距-1px
+          styles[0][i] = { fontFamily: 'DIN', fontWeight: 'bold', fontSize: aioNumFontSize, fill: '#FF5024', deltaY: aioNumDeltaY, deltaX: aioNumSpacing };
         } else if (char === '元' || char === '折') {
-          // "元"和"折"字：MF FangHei，字号26，高亮橙#FF5024，下移使底部对齐
-          styles[0][i] = { fontFamily: 'MF FangHei', fontWeight: 'normal', fontSize: px(26), fill: '#FF5024', deltaY: charDeltaY, ...(isAfterDigit ? { deltaX: spacingAdjust } : {}) };
+          // "元"和"折"字：MF FangHei，字号26，高亮橙#FF5024，间距3%
+          styles[0][i] = { fontFamily: 'MF FangHei', fontWeight: 'normal', fontSize: aioCharFontSize, fill: '#FF5024', deltaY: aioCharDeltaY, deltaX: aioCharSpacing };
         } else {
-          // 其他文字部分：MF FangHei，字号26，黑色，下移使底部对齐
-          // 如果前面是数字，使用统一的deltaX缩小间距
-          styles[0][i] = { fontFamily: 'MF FangHei', fontWeight: 'normal', fontSize: px(26), fill: '#000000', deltaY: charDeltaY, ...(isAfterDigit ? { deltaX: spacingAdjust } : {}) };
+          // 其他文字部分：MF FangHei，字号26，黑色，间距3%
+          styles[0][i] = { fontFamily: 'MF FangHei', fontWeight: 'normal', fontSize: aioCharFontSize, fill: '#000000', deltaY: aioCharDeltaY, deltaX: aioCharSpacing };
         }
       }
       aioTitleObj.set('styles', styles);
       aioTitleObj.dirty = true;
+      aioTitleObj.setCoords();
+      fabricCanvas?.requestRenderAll();
     }
     const aSub2 = findObjectById(ID_AIO_SUBTITLE_BOTTOM) as fabric.Text; 
     if(aSub2) {
@@ -827,9 +927,57 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     const file = e.target.files?.[0]; if (!file || !fabricCanvas) return;
     const reader = new FileReader(); reader.onload = (f) => {
       const result = f.target?.result as string;
-      fabric.Image.fromURL(result, (img) => { const old=findObjectById(ID_ASSET_IMAGE); if(old)fabricCanvas.remove(old); findObjectById(ID_ASSET_PLACEHOLDER)?.set({opacity:0}); const tW=px(164),tH=px(164),tX=PHONE_WIDTH-tW,tY=px(56); const s=Math.max(tW/img.width!,tH/img.height!); img.set({scaleX:s,scaleY:s,left:tX-(img.width!*s-tW)/2,top:tY-(img.height!*s-tH)/2,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:tY,width:tW,height:tH,absolutePositioned:true}),data:{id:ID_ASSET_IMAGE,zIndex:Z_INDEX.ASSET}}); fabricCanvas.add(img); sortLayers(); });
+      fabric.Image.fromURL(result, (img) => { 
+        const old=findObjectById(ID_ASSET_IMAGE); 
+        if(old)fabricCanvas.remove(old); 
+        findObjectById(ID_ASSET_PLACEHOLDER)?.set({opacity:0}); 
+        // 根据当前主标题长度动态计算素材区域尺寸
+        const mainTitleLen = mainTitle.length;
+        const isShortTitle = mainTitleLen <= 6;
+        const assetSize = isShortTitle ? px(182) : px(164);
+        const tW = assetSize;
+        const tH = assetSize;
+        const tX = SCREEN_1_X + PHONE_WIDTH - tW + px(10);
+        const tY = px(56);
+        const s=Math.max(tW/img.width!,tH/img.height!); 
+        const imgLeft = tX - (img.width! * s - tW) / 2;
+        const imgTop = tY - (img.height! * s - tH) / 2;
+        
+        // 限制图片在375x812区域内，超出部分不显示
+        // 计算裁剪区域：素材区域和375x812区域的交集
+        const clipLeft = Math.max(SCREEN_1_X, tX);
+        const clipTop = Math.max(0, tY);
+        const clipRight = Math.min(SCREEN_1_X + PHONE_WIDTH, tX + tW);
+        const clipBottom = Math.min(PHONE_HEIGHT, tY + tH);
+        const clipWidth = clipRight - clipLeft;
+        const clipHeight = clipBottom - clipTop;
+        
+        img.set({
+          scaleX:s,
+          scaleY:s,
+          left:imgLeft,
+          top:imgTop,
+          selectable:false,
+          evented:false,
+          clipPath:new fabric.Rect({
+            left:clipLeft,
+            top:clipTop,
+            width:clipWidth,
+            height:clipHeight,
+            absolutePositioned:true
+          }),
+          data:{id:ID_ASSET_IMAGE,zIndex:Z_INDEX.ASSET}
+        });
+        fabricCanvas.add(img);
+        // 同时更新placeholder尺寸
+        const placeholder = findObjectById(ID_ASSET_PLACEHOLDER) as fabric.Rect;
+        if (placeholder) {
+          placeholder.set({ left: tX, width: tW, height: tH });
+        }
+        sortLayers(); 
+      });
       fabric.Image.fromURL(result, (img2) => { const old=findObjectById(ID_BANNER_ICON_IMAGE); if(old)fabricCanvas.remove(old); findObjectById(ID_BANNER_ICON_PLACEHOLDER)?.set({opacity:0}); const iconBgSize = px(73); const iconBgX = BANNER_OFFSET_X + px(12); const iconBgY = BANNER_OFFSET_Y + (BANNER_H - iconBgSize)/2; const tS=px(80); const s=Math.max(tS/img2.width!,tS/img2.height!); const imgWidth = img2.width! * s; const imgHeight = img2.height! * s; const tX = iconBgX + iconBgSize - tS; const tY = iconBgY + iconBgSize - tS; img2.set({scaleX:s,scaleY:s,left:tX-(imgWidth-tS)/2,top:tY-(imgHeight-tS)/2,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:tY,width:tS,height:tS,rx:px(8),ry:px(8),absolutePositioned:true}),data:{id:ID_BANNER_ICON_IMAGE,zIndex:Z_INDEX.ASSET}}); fabricCanvas.add(img2); sortLayers(); });
-      fabric.Image.fromURL(result, (img3) => { const old=findObjectById(ID_POPUP_ASSET_IMAGE); if(old)fabricCanvas.remove(old); const tSize=px(200),tX=SCREEN_3_X+(PHONE_WIDTH-tSize)/2,tY=POPUP_CONTAINER_Y+px(4); const s=Math.max(tSize/img3.width!,tSize/img3.height!); img3.set({left:tX-(img3.width!*s-tSize)/2,top:tY,scaleX:s,scaleY:s,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:tY,width:tSize,height:tSize,absolutePositioned:true}),data:{id:ID_POPUP_ASSET_IMAGE,zIndex:Z_INDEX.POPUP_ASSET}}); fabricCanvas.add(img3); sortLayers(); });
+      fabric.Image.fromURL(result, (img3) => { const old=findObjectById(ID_POPUP_ASSET_IMAGE); if(old)fabricCanvas.remove(old); const tSize=px(190),tX=SCREEN_3_X+(PHONE_WIDTH-tSize)/2,tY=POPUP_CONTAINER_Y+px(14); const s=Math.max(tSize/img3.width!,tSize/img3.height!); img3.set({left:tX-(img3.width!*s-tSize)/2,top:tY,scaleX:s,scaleY:s,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:tY,width:tSize,height:tSize,absolutePositioned:true}),data:{id:ID_POPUP_ASSET_IMAGE,zIndex:Z_INDEX.POPUP_ASSET}}); fabricCanvas.add(img3); sortLayers(); });
       fabric.Image.fromURL(result, (img4) => { 
         const old = findObjectById(ID_TICKET_ASSET_IMAGE); 
         if(old) fabricCanvas.remove(old); 
@@ -917,7 +1065,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
   };
   const handleRightBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if(!file||!fabricCanvas)return; const reader = new FileReader(); reader.onload=(f)=>{ fabric.Image.fromURL(f.target?.result as string,(img)=>{ const old=findObjectById(ID_MIDDLE_PHONE_BG); if(old)fabricCanvas.remove(old); const tX=PHONE_WIDTH+GAP; const s=Math.max(PHONE_WIDTH/img.width!,PHONE_HEIGHT/img.height!); img.set({left:tX,top:0,scaleX:s,scaleY:s,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:0,width:PHONE_WIDTH,height:PHONE_HEIGHT,absolutePositioned:true}),data:{id:ID_MIDDLE_PHONE_BG,zIndex:Z_INDEX.PHONE_BG}}); fabricCanvas.add(img); sortLayers(); })}; reader.readAsDataURL(file); };
   const handlePopupBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if(!file||!fabricCanvas)return; const reader = new FileReader(); reader.onload=(f)=>{ fabric.Image.fromURL(f.target?.result as string,(img)=>{ const old=findObjectById(ID_POPUP_PHONE_BG); if(old)fabricCanvas.remove(old); const tX=SCREEN_3_X; const s=Math.max(PHONE_WIDTH/img.width!,PHONE_HEIGHT/img.height!); img.set({left:tX,top:0,scaleX:s,scaleY:s,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:0,width:PHONE_WIDTH,height:PHONE_HEIGHT,absolutePositioned:true}),data:{id:ID_POPUP_PHONE_BG,zIndex:Z_INDEX.PHONE_BG}}); fabricCanvas.add(img); sortLayers(); })}; reader.readAsDataURL(file); };
-  const handlePopupAssetUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if(!file||!fabricCanvas)return; const reader = new FileReader(); reader.onload=(f)=>{ fabric.Image.fromURL(f.target?.result as string,(img)=>{ const old=findObjectById(ID_POPUP_ASSET_IMAGE); if(old)fabricCanvas.remove(old); const tSize=px(200); const tX=SCREEN_3_X+(PHONE_WIDTH-tSize)/2; const tY=POPUP_CONTAINER_Y+px(4); const s=Math.max(tSize/img.width!,tSize/img.height!); img.set({left:tX-(img.width!*s-tSize)/2,top:tY,scaleX:s,scaleY:s,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:tY,width:tSize,height:tSize,absolutePositioned:true}),data:{id:ID_POPUP_ASSET_IMAGE,zIndex:Z_INDEX.POPUP_ASSET}}); fabricCanvas.add(img); sortLayers(); })}; reader.readAsDataURL(file); };
+  const handlePopupAssetUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if(!file||!fabricCanvas)return; const reader = new FileReader(); reader.onload=(f)=>{ fabric.Image.fromURL(f.target?.result as string,(img)=>{ const old=findObjectById(ID_POPUP_ASSET_IMAGE); if(old)fabricCanvas.remove(old); const tSize=px(190); const tX=SCREEN_3_X+(PHONE_WIDTH-tSize)/2; const tY=POPUP_CONTAINER_Y+px(14); const s=Math.max(tSize/img.width!,tSize/img.height!); img.set({left:tX-(img.width!*s-tSize)/2,top:tY,scaleX:s,scaleY:s,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:tY,width:tSize,height:tSize,absolutePositioned:true}),data:{id:ID_POPUP_ASSET_IMAGE,zIndex:Z_INDEX.POPUP_ASSET}}); fabricCanvas.add(img); sortLayers(); })}; reader.readAsDataURL(file); };
   const handlePopupFrameUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if(!file||!fabricCanvas)return; const reader = new FileReader(); reader.onload=(f)=>{ fabric.Image.fromURL(f.target?.result as string,(img)=>{ const old=findObjectById(ID_POPUP_FIXED_FRAME); if(old)fabricCanvas.remove(old); const tW=FRAME_W; const tH=FRAME_H; const tX=FRAME_ABS_X; const tY=FRAME_ABS_Y; const s=Math.max(tW/img.width!,tH/img.height!); const sW=img.width!*s; const sH=img.height!*s; const oX=(sW-tW)/2; const oY=(sH-tH)/2; img.set({left:tX-oX,top:tY-oY,scaleX:s,scaleY:s,selectable:false,evented:false,shadow:new fabric.Shadow({color:'rgba(0,0,0,0.15)',blur:30,offsetX:0,offsetY:10}),clipPath:new fabric.Rect({left:tX,top:tY,width:tW,height:tH,absolutePositioned:true}),data:{id:ID_POPUP_FIXED_FRAME,zIndex:Z_INDEX.FRAME}}); fabricCanvas.add(img); sortLayers(); }); }; reader.readAsDataURL(file); };
   const handleBannerIconUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (!file || !fabricCanvas) return; const reader = new FileReader(); reader.onload = (f) => { fabric.Image.fromURL(f.target?.result as string, (img) => { const old = findObjectById(ID_BANNER_ICON_IMAGE); if(old) fabricCanvas.remove(old); findObjectById(ID_BANNER_ICON_PLACEHOLDER)?.set({opacity:0}); const iconBgSize = px(73); const iconBgX = BANNER_OFFSET_X + px(12); const iconBgY = BANNER_OFFSET_Y + (BANNER_H - iconBgSize)/2; const tS = px(80); const s = Math.max(tS/img.width!, tS/img.height!); const imgWidth = img.width! * s; const imgHeight = img.height! * s; const tX = iconBgX + iconBgSize - tS; const tY = iconBgY + iconBgSize - tS; img.set({scaleX:s,scaleY:s,left:tX-(imgWidth-tS)/2,top:tY-(imgHeight-tS)/2,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:tY,width:tS,height:tS,rx:px(8),ry:px(8),absolutePositioned:true}),data:{id:ID_BANNER_ICON_IMAGE,zIndex:Z_INDEX.ASSET}}); fabricCanvas.add(img); sortLayers(); fabricCanvas.requestRenderAll(); }); }; reader.readAsDataURL(file); }
   const handleAioCardBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (!file || !fabricCanvas) return; const reader = new FileReader(); reader.onload = (f) => { fabric.Image.fromURL(f.target?.result as string, (img) => { const old = findObjectById(ID_AIO_CARD_BG_IMAGE); if(old) fabricCanvas.remove(old); const oldRect = findObjectById(ID_AIO_CARD_BG); if(oldRect) oldRect.set({opacity:0}); const tW = AIO_CARD_W; const tH = AIO_CARD_H; const tX = AIO_CARD_X; const tY = AIO_CARD_Y; const s = Math.max(tW/img.width!, tH/img.height!); img.set({left:tX-(img.width!*s-tW)/2, top:tY-(img.height!*s-tH)/2, scaleX:s, scaleY:s, selectable:false, evented:false, clipPath:new fabric.Rect({left:tX,top:tY,width:tW,height:tH,absolutePositioned:true}),data:{id:ID_AIO_CARD_BG_IMAGE, zIndex: Z_INDEX.GRADIENT}}); fabricCanvas.add(img); sortLayers(); fabricCanvas.requestRenderAll(); }); }; reader.readAsDataURL(file); };
@@ -1136,8 +1284,8 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
                        const next = e.target.value;
                        setSubTitle(isComposingSubTitle ? next : next.slice(0, LEFT_SUB_LIMIT));
                      }}
-                     placeholder="副标题 (最多13字符)"
-                     maxLength={13}
+                     placeholder="副标题 (最多11字符)"
+                     maxLength={11}
                    />
                    <div className="text-[10px] text-gray-400 mt-0.5">{Math.min(subTitle.length, LEFT_SUB_LIMIT)}/{LEFT_SUB_LIMIT}</div>
                  </div>
@@ -1326,7 +1474,24 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
                   />
                   <div className="text-[10px] text-gray-400 mt-0.5">{Math.min(popupSubTitle.length, 11)}/11</div>
                 </div>
-                <input type="text" className="w-full border text-xs p-1 rounded-[8px]" style={{ backgroundColor: '#F3F3F5' }} value={popupPriceText} onChange={e => setPopupPriceText(e.target.value)} placeholder="红色大标题 (数字部分自动DIN-Bold，汉字部分MF FangHei)"/>
+                <input 
+                  type="text" 
+                  className="w-full border text-xs p-1 rounded-[8px]" 
+                  style={{ backgroundColor: '#F3F3F5' }} 
+                  value={popupPriceText} 
+                  onCompositionStart={() => setIsComposingPopupPriceText(true)}
+                  onCompositionEnd={(e) => {
+                    setIsComposingPopupPriceText(false);
+                    setPopupPriceText(e.currentTarget.value.slice(0, POPUP_PRICE_LIMIT));
+                  }}
+                  onChange={e => {
+                    const next = e.target.value;
+                    setPopupPriceText(isComposingPopupPriceText ? next : next.slice(0, POPUP_PRICE_LIMIT));
+                  }}
+                  placeholder={`红色大标题 (最多${POPUP_PRICE_LIMIT}字符，数字部分自动DIN-Bold，汉字部分MF FangHei)`}
+                  maxLength={POPUP_PRICE_LIMIT}
+                />
+                <div className="text-[10px] text-gray-400 mt-0.5">{Math.min(popupPriceText.length, POPUP_PRICE_LIMIT)}/{POPUP_PRICE_LIMIT}</div>
                 <div className="flex gap-2">
                   <div className="flex-1">
                     <input 
