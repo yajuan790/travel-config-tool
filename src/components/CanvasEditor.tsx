@@ -522,7 +522,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
     const popupAssetSize = px(190); const popupAssetX = SCREEN_3_X + (PHONE_WIDTH - popupAssetSize) / 2; const popupAssetY = POPUP_CONTAINER_Y + px(14); // 底部距离不变，从200改为190，top上移10px
     const popupAssetPlaceholder = new fabric.Rect({ left: popupAssetX, top: popupAssetY, width: popupAssetSize, height: popupAssetSize, fill: '#00FFFF', opacity: 0.3, selectable: false, evented: false, data: { id: ID_POPUP_ASSET_IMAGE, zIndex: Z_INDEX.POPUP_ASSET } });
     canvas.add(popupAssetPlaceholder);
-    fabric.Image.fromURL(DEFAULT_IMGS.POPUP_FRAME, (img) => { if (img.getSrc()) { const tW = FRAME_W; const tH = FRAME_H; const tX = FRAME_ABS_X; const tY = FRAME_ABS_Y; const s = Math.max(tW / img.width!, tH / img.height!); const sW = img.width! * s; const sH = img.height! * s; const oX = (sW - tW) / 2; const oY = (sH - tH) / 2; img.set({ left: tX - oX, top: tY - oY, scaleX: s, scaleY: s, selectable: false, evented: false, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 30, offsetX: 0, offsetY: 10 }), clipPath: new fabric.Rect({ left: tX, top: tY, width: tW, height: tH, absolutePositioned: true }), data: { id: ID_POPUP_FIXED_FRAME, zIndex: Z_INDEX.FRAME } }); canvas.add(img); sortLayers(canvas); } else {
+    fabric.Image.fromURL(DEFAULT_IMGS.POPUP_FRAME, (img) => { if (img.getSrc()) { const tW = FRAME_W; const tH = FRAME_H; const tX = FRAME_ABS_X; const tY = FRAME_ABS_Y; const s = Math.max(tW / img.width!, tH / img.height!); const sW = img.width! * s; const sH = img.height! * s; const oX = (sW - tW) / 2; const oY = (sH - tH) / 2; img.set({ left: tX - oX, top: tY - oY, scaleX: s, scaleY: s, selectable: false, evented: false, clipPath: new fabric.Rect({ left: tX, top: tY, width: tW, height: tH, absolutePositioned: true }), data: { id: ID_POPUP_FIXED_FRAME, zIndex: Z_INDEX.FRAME } }); canvas.add(img); sortLayers(canvas); } else {
          const fallback = new fabric.Rect({ left: FRAME_ABS_X, top: FRAME_ABS_Y, width: FRAME_W, height: FRAME_H, fill: 'transparent', selectable: false, evented: false, data: { id: ID_POPUP_FIXED_FRAME, zIndex: Z_INDEX.FRAME } }); canvas.add(fallback);
     }});
     const pBtnW = px(167); const pBtnH = px(46); const pBtnX = SCREEN_3_X + (PHONE_WIDTH - pBtnW) / 2; const pBtnY = FRAME_ABS_Y + FRAME_H - px(15) - pBtnH;
@@ -1066,7 +1066,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
   const handleRightBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if(!file||!fabricCanvas)return; const reader = new FileReader(); reader.onload=(f)=>{ fabric.Image.fromURL(f.target?.result as string,(img)=>{ const old=findObjectById(ID_MIDDLE_PHONE_BG); if(old)fabricCanvas.remove(old); const tX=PHONE_WIDTH+GAP; const s=Math.max(PHONE_WIDTH/img.width!,PHONE_HEIGHT/img.height!); img.set({left:tX,top:0,scaleX:s,scaleY:s,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:0,width:PHONE_WIDTH,height:PHONE_HEIGHT,absolutePositioned:true}),data:{id:ID_MIDDLE_PHONE_BG,zIndex:Z_INDEX.PHONE_BG}}); fabricCanvas.add(img); sortLayers(); })}; reader.readAsDataURL(file); };
   const handlePopupBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if(!file||!fabricCanvas)return; const reader = new FileReader(); reader.onload=(f)=>{ fabric.Image.fromURL(f.target?.result as string,(img)=>{ const old=findObjectById(ID_POPUP_PHONE_BG); if(old)fabricCanvas.remove(old); const tX=SCREEN_3_X; const s=Math.max(PHONE_WIDTH/img.width!,PHONE_HEIGHT/img.height!); img.set({left:tX,top:0,scaleX:s,scaleY:s,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:0,width:PHONE_WIDTH,height:PHONE_HEIGHT,absolutePositioned:true}),data:{id:ID_POPUP_PHONE_BG,zIndex:Z_INDEX.PHONE_BG}}); fabricCanvas.add(img); sortLayers(); })}; reader.readAsDataURL(file); };
   const handlePopupAssetUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if(!file||!fabricCanvas)return; const reader = new FileReader(); reader.onload=(f)=>{ fabric.Image.fromURL(f.target?.result as string,(img)=>{ const old=findObjectById(ID_POPUP_ASSET_IMAGE); if(old)fabricCanvas.remove(old); const tSize=px(190); const tX=SCREEN_3_X+(PHONE_WIDTH-tSize)/2; const tY=POPUP_CONTAINER_Y+px(14); const s=Math.max(tSize/img.width!,tSize/img.height!); img.set({left:tX-(img.width!*s-tSize)/2,top:tY,scaleX:s,scaleY:s,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:tY,width:tSize,height:tSize,absolutePositioned:true}),data:{id:ID_POPUP_ASSET_IMAGE,zIndex:Z_INDEX.POPUP_ASSET}}); fabricCanvas.add(img); sortLayers(); })}; reader.readAsDataURL(file); };
-  const handlePopupFrameUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if(!file||!fabricCanvas)return; const reader = new FileReader(); reader.onload=(f)=>{ fabric.Image.fromURL(f.target?.result as string,(img)=>{ const old=findObjectById(ID_POPUP_FIXED_FRAME); if(old)fabricCanvas.remove(old); const tW=FRAME_W; const tH=FRAME_H; const tX=FRAME_ABS_X; const tY=FRAME_ABS_Y; const s=Math.max(tW/img.width!,tH/img.height!); const sW=img.width!*s; const sH=img.height!*s; const oX=(sW-tW)/2; const oY=(sH-tH)/2; img.set({left:tX-oX,top:tY-oY,scaleX:s,scaleY:s,selectable:false,evented:false,shadow:new fabric.Shadow({color:'rgba(0,0,0,0.15)',blur:30,offsetX:0,offsetY:10}),clipPath:new fabric.Rect({left:tX,top:tY,width:tW,height:tH,absolutePositioned:true}),data:{id:ID_POPUP_FIXED_FRAME,zIndex:Z_INDEX.FRAME}}); fabricCanvas.add(img); sortLayers(); }); }; reader.readAsDataURL(file); };
+  const handlePopupFrameUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if(!file||!fabricCanvas)return; const reader = new FileReader(); reader.onload=(f)=>{ fabric.Image.fromURL(f.target?.result as string,(img)=>{ const old=findObjectById(ID_POPUP_FIXED_FRAME); if(old)fabricCanvas.remove(old); const tW=FRAME_W; const tH=FRAME_H; const tX=FRAME_ABS_X; const tY=FRAME_ABS_Y; const s=Math.max(tW/img.width!,tH/img.height!); const sW=img.width!*s; const sH=img.height!*s; const oX=(sW-tW)/2; const oY=(sH-tH)/2; img.set({left:tX-oX,top:tY-oY,scaleX:s,scaleY:s,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:tY,width:tW,height:tH,absolutePositioned:true}),data:{id:ID_POPUP_FIXED_FRAME,zIndex:Z_INDEX.FRAME}}); fabricCanvas.add(img); sortLayers(); }); }; reader.readAsDataURL(file); };
   const handleBannerIconUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (!file || !fabricCanvas) return; const reader = new FileReader(); reader.onload = (f) => { fabric.Image.fromURL(f.target?.result as string, (img) => { const old = findObjectById(ID_BANNER_ICON_IMAGE); if(old) fabricCanvas.remove(old); findObjectById(ID_BANNER_ICON_PLACEHOLDER)?.set({opacity:0}); const iconBgSize = px(73); const iconBgX = BANNER_OFFSET_X + px(12); const iconBgY = BANNER_OFFSET_Y + (BANNER_H - iconBgSize)/2; const tS = px(80); const s = Math.max(tS/img.width!, tS/img.height!); const imgWidth = img.width! * s; const imgHeight = img.height! * s; const tX = iconBgX + iconBgSize - tS; const tY = iconBgY + iconBgSize - tS; img.set({scaleX:s,scaleY:s,left:tX-(imgWidth-tS)/2,top:tY-(imgHeight-tS)/2,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:tY,width:tS,height:tS,rx:px(8),ry:px(8),absolutePositioned:true}),data:{id:ID_BANNER_ICON_IMAGE,zIndex:Z_INDEX.ASSET}}); fabricCanvas.add(img); sortLayers(); fabricCanvas.requestRenderAll(); }); }; reader.readAsDataURL(file); }
   const handleAioCardBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (!file || !fabricCanvas) return; const reader = new FileReader(); reader.onload = (f) => { fabric.Image.fromURL(f.target?.result as string, (img) => { const old = findObjectById(ID_AIO_CARD_BG_IMAGE); if(old) fabricCanvas.remove(old); const oldRect = findObjectById(ID_AIO_CARD_BG); if(oldRect) oldRect.set({opacity:0}); const tW = AIO_CARD_W; const tH = AIO_CARD_H; const tX = AIO_CARD_X; const tY = AIO_CARD_Y; const s = Math.max(tW/img.width!, tH/img.height!); img.set({left:tX-(img.width!*s-tW)/2, top:tY-(img.height!*s-tH)/2, scaleX:s, scaleY:s, selectable:false, evented:false, clipPath:new fabric.Rect({left:tX,top:tY,width:tW,height:tH,absolutePositioned:true}),data:{id:ID_AIO_CARD_BG_IMAGE, zIndex: Z_INDEX.GRADIENT}}); fabricCanvas.add(img); sortLayers(); fabricCanvas.requestRenderAll(); }); }; reader.readAsDataURL(file); };
   const handleTicketAssetUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (!file || !fabricCanvas) return; const reader = new FileReader(); reader.onload = (f) => { fabric.Image.fromURL(f.target?.result as string, (img) => { const old = findObjectById(ID_TICKET_ASSET_IMAGE); if(old) fabricCanvas.remove(old); const tW = TICKET_ASSET_SIZE; const tH = TICKET_ASSET_SIZE; const tX = TICKET_ASSET_X; const tY = TICKET_ASSET_Y; const s = Math.max(tW/img.width!, tH/img.height!); img.set({left:tX-(img.width!*s-tW)/2, top:tY-(img.height!*s-tH)/2, scaleX:s, scaleY:s, selectable:false, evented:false, clipPath:new fabric.Rect({left:TICKET_GRADIENT_X,top:TICKET_GRADIENT_Y,width:TICKET_GRADIENT_W,height:TICKET_GRADIENT_H,absolutePositioned:true}),data:{id:ID_TICKET_ASSET_IMAGE, zIndex: Z_INDEX.ASSET}}); fabricCanvas.add(img); sortLayers(); fabricCanvas.requestRenderAll(); }); }; reader.readAsDataURL(file); };
@@ -1249,14 +1249,24 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
             </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-700 font-bold">素材图:</span>
-                <label className="flex-1 px-3 py-1.5 text-xs bg-white border border-gray-300 rounded-[8px] cursor-pointer hover:bg-gray-50 text-gray-700 text-center">
+                <label 
+                  className="flex-1 px-3 py-1.5 text-xs rounded-[8px] cursor-pointer text-gray-700 text-center transition-all duration-200" 
+                  style={{ backgroundColor: '#DBEAFE' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#A3CAFF'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DBEAFE'}
+                >
                   点击上传
                   <input type="file" accept="image/*" onChange={handleGlobalAssetUpload} className="hidden"/>
                 </label>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-700 font-bold">背景图:</span>
-                <label className="flex-1 px-3 py-1.5 text-xs bg-white border border-gray-300 rounded-[8px] cursor-pointer hover:bg-gray-50 text-gray-700 text-center">
+                <label 
+                  className="flex-1 px-3 py-1.5 text-xs rounded-[8px] cursor-pointer text-gray-700 text-center transition-all duration-200" 
+                  style={{ backgroundColor: '#DBEAFE' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#A3CAFF'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DBEAFE'}
+                >
                   点击上传
                   <input type="file" accept="image/*" onChange={handleHeaderUpload} className="hidden"/>
                 </label>
@@ -1314,25 +1324,37 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
                  <div className="grid grid-cols-2 gap-2">
                    <button
                      onClick={() => handleMaskSelect('dache')}
-                     className="px-3 py-1.5 text-xs bg-white hover:bg-gray-50 rounded-[8px] border border-gray-300 text-gray-700"
+                     className="px-3 py-1.5 text-xs rounded-[8px] text-gray-700 transition-all duration-200"
+                     style={{ backgroundColor: '#DBEAFE' }}
+                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#A3CAFF'}
+                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DBEAFE'}
                    >
                      打车
                    </button>
                    <button
                      onClick={() => handleMaskSelect('shunfengche')}
-                     className="px-3 py-1.5 text-xs bg-white hover:bg-gray-50 rounded-[8px] border border-gray-300 text-gray-700"
+                     className="px-3 py-1.5 text-xs rounded-[8px] text-gray-700 transition-all duration-200"
+                     style={{ backgroundColor: '#DBEAFE' }}
+                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#A3CAFF'}
+                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DBEAFE'}
                    >
                      顺风车
                    </button>
                    <button
                      onClick={() => handleMaskSelect('OTA')}
-                     className="px-3 py-1.5 text-xs bg-white hover:bg-gray-50 rounded-[8px] border border-gray-300 text-gray-700"
+                     className="px-3 py-1.5 text-xs rounded-[8px] text-gray-700 transition-all duration-200"
+                     style={{ backgroundColor: '#DBEAFE' }}
+                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#A3CAFF'}
+                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DBEAFE'}
                    >
                      OTA
                    </button>
                    <button
                      onClick={() => handleMaskSelect('jingwai')}
-                     className="px-3 py-1.5 text-xs bg-white hover:bg-gray-50 rounded-[8px] border border-gray-300 text-gray-700"
+                     className="px-3 py-1.5 text-xs rounded-[8px] text-gray-700 transition-all duration-200"
+                     style={{ backgroundColor: '#DBEAFE' }}
+                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#A3CAFF'}
+                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DBEAFE'}
                    >
                      境外打车
                    </button>
