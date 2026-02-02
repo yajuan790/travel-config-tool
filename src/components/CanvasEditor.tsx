@@ -265,7 +265,212 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
   const [aioBtnText, setAioBtnText] = useState('去领取');
   const [isComposingAioSubTitleTop, setIsComposingAioSubTitleTop] = useState(false);
   const [isComposingAioTitle, setIsComposingAioTitle] = useState(false);
-  const [isComposingAioSubTitleBottom, setIsComposingAioSubTitleBottom] = useState(false); 
+  const [isComposingAioSubTitleBottom, setIsComposingAioSubTitleBottom] = useState(false);
+
+  // 图库弹窗状态
+  const [showImageLibrary, setShowImageLibrary] = useState(false);
+  const [libraryType, setLibraryType] = useState<'asset' | 'background'>('asset');
+  
+  // 图库图片列表（自动加载public文件夹下的图片）
+  const assetImages = [
+    '/assets/001.png',
+    '/assets/002.png',
+    '/assets/003.png',
+    '/assets/004.png',
+    '/assets/005.png',
+    '/assets/006.png',
+    '/assets/007.png',
+    '/assets/008.png',
+    '/assets/009.png',
+    '/assets/010.png',
+    '/assets/011.png',
+  ];
+  
+  const backgroundImages = [
+    '/backgrounds/001.png',
+    '/backgrounds/002.png',
+    '/backgrounds/003.png',
+    '/backgrounds/004.png',
+    '/backgrounds/005.png',
+    '/backgrounds/007.png',
+    '/backgrounds/008.png',
+  ];
+  
+  // 打开图库弹窗
+  const openImageLibrary = (type: 'asset' | 'background') => {
+    setLibraryType(type);
+    setShowImageLibrary(true);
+  };
+  
+  // 从图库选择图片
+  const handleImageLibrarySelect = (imagePath: string) => {
+    if (!fabricCanvas) return;
+    
+    if (libraryType === 'asset') {
+      // 使用全局素材上传逻辑
+      const result = imagePath;
+      // 替换发券会场素材图
+      fabric.Image.fromURL(result, (img1) => { 
+        const old=findObjectById(ID_ASSET_IMAGE); 
+        if(old)fabricCanvas.remove(old); 
+        findObjectById(ID_ASSET_PLACEHOLDER)?.set({opacity:0}); 
+        // 根据当前主标题长度动态计算素材区域尺寸
+        const mainTitleLen = mainTitle.length;
+        const isShortTitle = mainTitleLen <= 6;
+        const assetSize = isShortTitle ? px(182) : px(164);
+        const tW = assetSize;
+        const tH = assetSize;
+        const tX = SCREEN_1_X + PHONE_WIDTH - tW + px(10);
+        const tY = px(56);
+        const s=Math.max(tW/img1.width!,tH/img1.height!); 
+        const imgLeft = tX - (img1.width! * s - tW) / 2;
+        const imgTop = tY - (img1.height! * s - tH) / 2;
+        
+        // 限制图片在375x812区域内，超出部分不显示
+        const clipLeft = Math.max(SCREEN_1_X, tX);
+        const clipTop = Math.max(0, tY);
+        const clipRight = Math.min(SCREEN_1_X + PHONE_WIDTH, tX + tW);
+        const clipBottom = Math.min(PHONE_HEIGHT, tY + tH);
+        const clipWidth = clipRight - clipLeft;
+        const clipHeight = clipBottom - clipTop;
+        
+        img1.set({
+          left: imgLeft,
+          top: imgTop,
+          scaleX: s,
+          scaleY: s,
+          selectable: false,
+          evented: false,
+          clipPath: new fabric.Rect({
+            left: clipLeft,
+            top: clipTop,
+            width: clipWidth,
+            height: clipHeight,
+            absolutePositioned: true
+          }),
+          data:{id:ID_ASSET_IMAGE,zIndex:Z_INDEX.ASSET}
+        });
+        fabricCanvas.add(img1);
+        // 同时更新placeholder尺寸
+        const placeholder = findObjectById(ID_ASSET_PLACEHOLDER) as fabric.Rect;
+        if (placeholder) {
+          placeholder.set({ left: tX, width: tW, height: tH });
+        }
+        sortLayers(); 
+      });
+      // 替换Banner图标
+      fabric.Image.fromURL(result, (img2) => { 
+        const old=findObjectById(ID_BANNER_ICON_IMAGE); 
+        if(old)fabricCanvas.remove(old); 
+        findObjectById(ID_BANNER_ICON_PLACEHOLDER)?.set({opacity:0}); 
+        const iconBgSize = px(73); 
+        const iconBgX = BANNER_OFFSET_X + px(12); 
+        const iconBgY = BANNER_OFFSET_Y + (BANNER_H - iconBgSize)/2; 
+        const tS=px(80); 
+        const s=Math.max(tS/img2.width!,tS/img2.height!); 
+        const imgWidth = img2.width! * s; 
+        const imgHeight = img2.height! * s; 
+        const tX = iconBgX + iconBgSize - tS; 
+        const tY = iconBgY + iconBgSize - tS; 
+        img2.set({scaleX:s,scaleY:s,left:tX-(imgWidth-tS)/2,top:tY-(imgHeight-tS)/2,selectable:false,evented:false,clipPath:new fabric.Rect({left:tX,top:tY,width:tS,height:tS,rx:px(8),ry:px(8),absolutePositioned:true}),data:{id:ID_BANNER_ICON_IMAGE,zIndex:Z_INDEX.ASSET}}); 
+        fabricCanvas.add(img2); 
+        sortLayers(); 
+      });
+      // 替换活动弹窗素材图
+      fabric.Image.fromURL(result, (img3) => { 
+        const old=findObjectById(ID_POPUP_ASSET_IMAGE); 
+        if(old)fabricCanvas.remove(old); 
+        const popupAssetSize = px(190);
+        const popupAssetX = SCREEN_3_X + (PHONE_WIDTH - popupAssetSize) / 2;
+        const popupAssetY = POPUP_CONTAINER_Y + px(14);
+        const s=Math.max(popupAssetSize/img3.width!,popupAssetSize/img3.height!);
+        img3.set({left:popupAssetX-(img3.width!*s-popupAssetSize)/2, top:popupAssetY, scaleX:s, scaleY:s, selectable:false, evented:false, clipPath:new fabric.Rect({left:popupAssetX,top:popupAssetY,width:popupAssetSize,height:popupAssetSize,absolutePositioned:true}), data:{id:ID_POPUP_ASSET_IMAGE, zIndex: Z_INDEX.POPUP_ASSET}});
+        fabricCanvas.add(img3);
+        sortLayers();
+      });
+      // 替换领券弹窗素材图
+      fabric.Image.fromURL(result, (img4) => {
+        const old=findObjectById(ID_TICKET_ASSET_IMAGE);
+        if(old)fabricCanvas.remove(old);
+        const tW = TICKET_ASSET_SIZE;
+        const tH = TICKET_ASSET_SIZE;
+        const tX = TICKET_ASSET_X;
+        const tY = TICKET_ASSET_Y;
+        const s=Math.max(tW/img4.width!, tH/img4.height!);
+        const imgLeft = tX-(img4.width!*s-tW)/2;
+        const imgTop = tY-(img4.height!*s-tH)/2;
+        // 只裁剪右侧超出247x239部分，不裁剪顶部超出部分
+        const clipRight = TICKET_GRADIENT_X + TICKET_GRADIENT_W; // 右边界限制在247x239的右边界
+        const clipLeft = imgLeft; // 左边界不限制
+        const clipTop = imgTop; // 顶部不限制，使用图片的实际top
+        const clipWidth = Math.max(0, clipRight - clipLeft); // 宽度限制为从图片left到右边界
+        const clipHeight = PHONE_HEIGHT; // 高度不限制，使用一个很大的值
+        img4.set({
+          left: imgLeft, 
+          top: imgTop, 
+          scaleX: s, 
+          scaleY: s, 
+          selectable: false, 
+          evented: false, 
+          clipPath: new fabric.Rect({
+            left: clipLeft,
+            top: clipTop,
+            width: clipWidth,
+            height: clipHeight,
+            absolutePositioned: true
+          }),
+          data:{id:ID_TICKET_ASSET_IMAGE, zIndex: Z_INDEX.ASSET}
+        });
+        fabricCanvas.add(img4);
+        sortLayers();
+        fabricCanvas.requestRenderAll();
+      });
+      // 替换AIO素材图
+      fabric.Image.fromURL(result, (img5) => {
+        const old = findObjectById(ID_AIO_ASSET_IMAGE);
+        if(old) fabricCanvas.remove(old);
+        const tW=px(115);
+        const tH=px(115);
+        const tX=AIO_CARD_X + AIO_CARD_W - tW;
+        const tY=AIO_CARD_Y + AIO_CARD_H - tH;
+        const s=Math.max(tW/img5.width!, tH/img5.height!);
+        img5.set({left:tX-(img5.width!*s-tW)/2, top:tY-(img5.height!*s-tH)/2, scaleX:s, scaleY:s, selectable:false, evented:false, clipPath:new fabric.Rect({left:tX,top:tY,width:tW,height:tH,absolutePositioned:true}),data:{id:ID_AIO_ASSET_IMAGE, zIndex: Z_INDEX.ASSET}});
+        fabricCanvas.add(img5);
+        sortLayers();
+        fabricCanvas.requestRenderAll();
+      });
+    } else if (libraryType === 'background') {
+      // 使用背景图上传逻辑
+      const result = imagePath;
+      // 替换发券会场375x250区域背景图
+      fabric.Image.fromURL(result,(img1)=>{
+        const old=findObjectById(ID_HEADER_LAYER);
+        if(old)fabricCanvas.remove(old);
+        const s=Math.max(PHONE_WIDTH/img1.width!,(250*SCALE_FACTOR)/img1.height!);
+        img1.set({left:0,top:0,scaleX:s,scaleY:s,selectable:false,evented:false,clipPath:new fabric.Rect({left:0,top:0,width:PHONE_WIDTH,height:250*SCALE_FACTOR,rx:px(40),ry:px(40),absolutePositioned:true}),data:{id:ID_HEADER_LAYER,zIndex:Z_INDEX.GRADIENT}});
+        fabricCanvas.add(img1);
+        sortLayers();
+      });
+      // 同步替换AIO的210x168区域背景图
+      fabric.Image.fromURL(result,(img2)=>{
+        const old = findObjectById(ID_AIO_CARD_BG_IMAGE);
+        if(old) fabricCanvas.remove(old);
+        const oldRect = findObjectById(ID_AIO_CARD_BG);
+        if(oldRect) oldRect.set({opacity:0});
+        const tW = AIO_CARD_W;
+        const tH = AIO_CARD_H;
+        const tX = AIO_CARD_X;
+        const tY = AIO_CARD_Y;
+        const s=Math.max(tW/img2.width!, tH/img2.height!);
+        img2.set({left:tX-(img2.width!*s-tW)/2, top:tY-(img2.height!*s-tH)/2, scaleX:s, scaleY:s, selectable:false, evented:false, clipPath:new fabric.Rect({left:tX,top:tY,width:tW,height:tH,absolutePositioned:true}),data:{id:ID_AIO_CARD_BG_IMAGE, zIndex: Z_INDEX.GRADIENT}});
+        fabricCanvas.add(img2);
+        sortLayers();
+        fabricCanvas.requestRenderAll();
+      });
+    }
+    
+    setShowImageLibrary(false);
+  }; 
 
   // 尺寸配置 (3x)
   const SCALE_FACTOR = 3; 
@@ -307,7 +512,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
   const TICKET_LAYER_H = px(156);
   const TICKET_LAYER_X = TICKET_GRADIENT_X;
   const TICKET_LAYER_Y = TICKET_GRADIENT_Y + TICKET_GRADIENT_H - TICKET_LAYER_H;
-  const TICKET_ASSET_SIZE = px(106);
+  const TICKET_ASSET_SIZE = px(115);
   const TICKET_ASSET_X = SCREEN_4_X + PHONE_WIDTH - TICKET_ASSET_SIZE - px(56);
   // 素材区域在渐变区域顶部的基础上向上偏移 20px
   const TICKET_ASSET_Y = TICKET_GRADIENT_Y - px(20);
@@ -986,14 +1191,28 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
         const tX = TICKET_ASSET_X; 
         const tY = TICKET_ASSET_Y; 
         const s = Math.max(tW/img4.width!, tH/img4.height!); 
-        // 不再裁剪到247x239区域，保留完整106x106素材图
+        const imgLeft = tX-(img4.width!*s-tW)/2;
+        const imgTop = tY-(img4.height!*s-tH)/2;
+        // 只裁剪右侧超出247x239部分，不裁剪顶部超出部分
+        const clipRight = TICKET_GRADIENT_X + TICKET_GRADIENT_W; // 右边界限制在247x239的右边界
+        const clipLeft = imgLeft; // 左边界不限制
+        const clipTop = imgTop; // 顶部不限制，使用图片的实际top
+        const clipWidth = Math.max(0, clipRight - clipLeft); // 宽度限制为从图片left到右边界
+        const clipHeight = PHONE_HEIGHT; // 高度不限制，使用一个很大的值
         img4.set({
-          left: tX-(img4.width!*s-tW)/2, 
-          top: tY-(img4.height!*s-tH)/2, 
+          left: imgLeft, 
+          top: imgTop, 
           scaleX: s, 
           scaleY: s, 
           selectable: false, 
           evented: false, 
+          clipPath: new fabric.Rect({
+            left: clipLeft,
+            top: clipTop,
+            width: clipWidth,
+            height: clipHeight,
+            absolutePositioned: true
+          }),
           data:{id:ID_TICKET_ASSET_IMAGE, zIndex: Z_INDEX.ASSET}
         }); 
         fabricCanvas.add(img4); 
@@ -1249,27 +1468,55 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
             </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-700 font-bold">素材图:</span>
-                <label 
-                  className="flex-1 px-3 py-1.5 text-xs rounded-[8px] cursor-pointer text-gray-700 text-center transition-all duration-200" 
-                  style={{ backgroundColor: '#DBEAFE' }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#A3CAFF'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DBEAFE'}
-                >
-                  点击上传
-                  <input type="file" accept="image/*" onChange={handleGlobalAssetUpload} className="hidden"/>
-                </label>
+                <div className="flex-1 flex gap-2">
+                  <label className="flex-1 px-3 py-1.5 text-xs rounded-[8px] cursor-pointer text-gray-700 text-center transition-all duration-200" 
+                    style={{ backgroundColor: '#DBEAFE' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#A3CAFF'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DBEAFE'}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleGlobalAssetUpload}
+                      className="hidden"
+                    />
+                    本地上传
+                  </label>
+                  <button
+                    onClick={() => openImageLibrary('asset')}
+                    className="flex-1 px-3 py-1.5 text-xs rounded-[8px] cursor-pointer text-gray-700 text-center transition-all duration-200" 
+                    style={{ backgroundColor: '#DBEAFE' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#A3CAFF'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DBEAFE'}
+                  >
+                    图库选图
+                  </button>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-700 font-bold">背景图:</span>
-                <label 
-                  className="flex-1 px-3 py-1.5 text-xs rounded-[8px] cursor-pointer text-gray-700 text-center transition-all duration-200" 
-                  style={{ backgroundColor: '#DBEAFE' }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#A3CAFF'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DBEAFE'}
-                >
-                  点击上传
-                  <input type="file" accept="image/*" onChange={handleHeaderUpload} className="hidden"/>
-                </label>
+                <div className="flex-1 flex gap-2">
+                  <label className="flex-1 px-3 py-1.5 text-xs rounded-[8px] cursor-pointer text-gray-700 text-center transition-all duration-200" 
+                    style={{ backgroundColor: '#DBEAFE' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#A3CAFF'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DBEAFE'}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleHeaderUpload}
+                      className="hidden"
+                    />
+                    本地上传
+                  </label>
+                  <button
+                    onClick={() => openImageLibrary('background')}
+                    className="flex-1 px-3 py-1.5 text-xs rounded-[8px] cursor-pointer text-gray-700 text-center transition-all duration-200" 
+                    style={{ backgroundColor: '#DBEAFE' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#A3CAFF'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DBEAFE'}
+                  >
+                    图库选图
+                  </button>
+                </div>
               </div>
             </div>
             
@@ -1719,6 +1966,55 @@ const CanvasEditor: React.FC<CanvasEditorProps> = () => {
                  <canvas ref={canvasRef} />
              </div>
         </div>
+        
+        {/* 图库弹窗 */}
+        {showImageLibrary && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowImageLibrary(false)}>
+            <div className="bg-white rounded-lg p-6 max-w-5xl w-[90vw] h-[90vh] max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+              <div className="flex justify-between items-center mb-4 flex-shrink-0">
+                <h2 className="text-xl font-bold text-gray-800">
+                  {libraryType === 'asset' ? '素材图库' : '背景图库'}
+                </h2>
+                <button
+                  onClick={() => setShowImageLibrary(false)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-0 overflow-y-auto flex-1 pr-2" style={{ maxHeight: 'calc(90vh - 100px)', paddingTop: libraryType === 'asset' ? '160px' : '500px' }}>
+                {(libraryType === 'asset' ? assetImages : backgroundImages).map((imagePath, index) => (
+                  <div
+                    key={index}
+                    className={`relative group cursor-pointer border-2 border-gray-200 rounded-lg overflow-hidden hover:border-blue-500 transition-all bg-gray-50 ${
+                      libraryType === 'asset' ? 'aspect-square' : 'aspect-[3/2]'
+                    }`}
+                    style={{ marginTop: libraryType === 'asset' ? '-160px' : '-500px' }}
+                    onClick={() => handleImageLibrarySelect(imagePath)}
+                  >
+                    <img
+                      src={imagePath}
+                      alt={`${libraryType === 'asset' ? '素材' : '背景'}图 ${index + 1}`}
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%23f0f0f0"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999"%3E图片加载失败%3C/text%3E%3C/svg%3E';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
+                      <span className="text-white opacity-0 group-hover:opacity-100 text-sm font-bold">点击选择</span>
+                    </div>
+                  </div>
+                ))}
+                {((libraryType === 'asset' ? assetImages : backgroundImages).length === 0) && (
+                  <div className="col-span-full text-center py-8 text-gray-500">
+                    <p>暂无图片</p>
+                    <p className="text-xs mt-2">请将图片放入 public/{libraryType === 'asset' ? 'assets' : 'backgrounds'} 文件夹</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   );
 };
